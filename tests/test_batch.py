@@ -272,3 +272,12 @@ def test_edges_of_a_removed_dependency_leave_the_map(tmp_path):
     _, state = _file(trimmed, api=api, map_path=map_path)
     assert state["edge_errors"] == []
     assert {(e["blocked"], e["blocker"]) for e in state["edges"]} == {("B", "A"), ("C", "B")}
+
+
+def test_a_pull_request_dependency_is_reported_not_an_edge_error():
+    api = FakeApi()
+    api.issues[12] = {"number": 12, "id": 120, "html_url": "https://x/pull/12", "body": "", "pull_request": {}}
+    _, state = _file(api=api)
+    assert state["edge_errors"] == []
+    assert state["pr_dependencies"] == [{"blocked": "B", "blocker": "#12", "url": "https://x/pull/12"}]
+    assert api.blocked_by == {101: [1000], 102: [1010]}
