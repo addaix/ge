@@ -2,35 +2,35 @@
 
 # About this build
 
-This documentation was built on **2026-11-14 15:47 UTC** from commit <a href="https://github.com/thorwhalen/ge/commit/d9b3f78d157bf48473a0857383bbe015e6520a8b"><code>d9b3f78</code></a> on branch <code>main</code>, for **ge 0.1.20** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-21 22:29 UTC** from commit <a href="https://github.com/addaix/ge/commit/5cf9b7b98835f4203912c0948543590a931d4f79"><code>5cf9b7b</code></a> on branch <code>main</code>, for **ge 0.1.21** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
 
 ## Source
 
-|                     |                                                                                                                                                      |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/ge/commit/d9b3f78d157bf48473a0857383bbe015e6520a8b"><code>d9b3f78d157bf48473a0857383bbe015e6520a8b</code></a> |
-| Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.1.20</code>                                                                                                                                  |
-| Working tree        | clean                                                                                                                                                |
-| Remote              | <code>https://github.com/thorwhalen/ge</code>                                                                                                        |
+|                     |                                                                                                                                                  |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| Commit              | <a href="https://github.com/addaix/ge/commit/5cf9b7b98835f4203912c0948543590a931d4f79"><code>5cf9b7b98835f4203912c0948543590a931d4f79</code></a> |
+| Branch              | <code>main</code>                                                                                                                                |
+| Tags at this commit | <code>0.1.21</code>                                                                                                                              |
+| Working tree        | clean                                                                                                                                            |
+| Remote              | <code>https://github.com/addaix/ge</code>                                                                                                        |
 
 ## Continuous integration
 
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
-| Repository   | <code>thorwhalen/ge</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/ge/actions/runs/43611879922">43611879922</a>        |
+| Repository   | <code>addaix/ge</code>                                                                     |
+| Run          | <a href="https://github.com/addaix/ge/actions/runs/44956869986">44956869986</a>            |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>608b187447ce5c9711e58aa58b4aa2237a58d693</code> (in the history of the built commit) |
+| Event commit | <code>b8ec30dd804a0950a9f44e22b84c4d1189dc383a</code> (in the history of the built commit) |
 
 ## Tools
 
 |          |         |
 |----------|---------|
-| epythet  | 0.2.22  |
+| epythet  | 0.2.23  |
 | Sphinx   | 9.1.1   |
 | docutils | 0.22.4  |
 | Python   | 3.12.16 |
@@ -49,14 +49,14 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.20/">0.1.20</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/ge/0.1.21/">0.1.21</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
-git clone https://github.com/thorwhalen/ge && cd ge
-git checkout d9b3f78d157bf48473a0857383bbe015e6520a8b
-pip install "epythet==0.2.22"
+git clone https://github.com/addaix/ge && cd ge
+git checkout 5cf9b7b98835f4203912c0948543590a931d4f79
+pip install "epythet==0.2.23"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
 

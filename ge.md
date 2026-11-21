@@ -1,4 +1,4 @@
-> built 2026-11-14 15:47 UTC from d9b3f78 (main) · ge 0.1.20. Details: build_info.json
+> built 2026-11-21 22:29 UTC from 5cf9b7b (main) · ge 0.1.21. Details: build_info.json
 
 # index.html.md
 
@@ -347,7 +347,9 @@ types, unique keys, known references, no dependency cycle), then:
    someone has edited on GitHub since is never overwritten: it is listed in
    `body_conflicts` instead (`force=True` overwrites);
 3. creates a GitHub `blocked_by` dependency edge for every `depends_on`
-   that the blocked issue does not already have.
+   that the blocked issue does not already have. GitHub only accepts issues as
+   blockers: a `depends_on` that names a pull request is skipped and reported in
+   `pr_dependencies` (it is not an error).
 
 `depends_on` takes batch keys and existing issues (`12`, `"#12"`,
 `"owner/repo#12"`). Progress is written to a map file after every step, so
@@ -362,6 +364,7 @@ The map’s shape is stable, for writing the links back into a source document:
  "issues": {"A": {"number": 7, "url": "...", "id": 123, "body_sha": "..."}},
  "edges": [{"blocked": "B", "blocker": "A"}],
  "edge_errors": [{"blocked": "B", "blocker": "#12", "error": "..."}],
+ "pr_dependencies": [{"blocked": "B", "blocker": "#13", "url": "..."}],
  "body_conflicts": ["C"]}
 ```
 
@@ -1843,35 +1846,35 @@ Replace media URLs in markdown with local file paths.
 
 # About this build
 
-This documentation was built on **2026-11-14 15:47 UTC** from commit <a href="https://github.com/thorwhalen/ge/commit/d9b3f78d157bf48473a0857383bbe015e6520a8b"><code>d9b3f78</code></a> on branch <code>main</code>, for **ge 0.1.20** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-21 22:29 UTC** from commit <a href="https://github.com/addaix/ge/commit/5cf9b7b98835f4203912c0948543590a931d4f79"><code>5cf9b7b</code></a> on branch <code>main</code>, for **ge 0.1.21** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
 
 ## Source
 
-|                     |                                                                                                                                                      |
-|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/ge/commit/d9b3f78d157bf48473a0857383bbe015e6520a8b"><code>d9b3f78d157bf48473a0857383bbe015e6520a8b</code></a> |
-| Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.1.20</code>                                                                                                                                  |
-| Working tree        | clean                                                                                                                                                |
-| Remote              | <code>https://github.com/thorwhalen/ge</code>                                                                                                        |
+|                     |                                                                                                                                                  |
+|---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| Commit              | <a href="https://github.com/addaix/ge/commit/5cf9b7b98835f4203912c0948543590a931d4f79"><code>5cf9b7b98835f4203912c0948543590a931d4f79</code></a> |
+| Branch              | <code>main</code>                                                                                                                                |
+| Tags at this commit | <code>0.1.21</code>                                                                                                                              |
+| Working tree        | clean                                                                                                                                            |
+| Remote              | <code>https://github.com/addaix/ge</code>                                                                                                        |
 
 ## Continuous integration
 
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
-| Repository   | <code>thorwhalen/ge</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/ge/actions/runs/43611879922">43611879922</a>        |
+| Repository   | <code>addaix/ge</code>                                                                     |
+| Run          | <a href="https://github.com/addaix/ge/actions/runs/44956869986">44956869986</a>            |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>608b187447ce5c9711e58aa58b4aa2237a58d693</code> (in the history of the built commit) |
+| Event commit | <code>b8ec30dd804a0950a9f44e22b84c4d1189dc383a</code> (in the history of the built commit) |
 
 ## Tools
 
 |          |         |
 |----------|---------|
-| epythet  | 0.2.22  |
+| epythet  | 0.2.23  |
 | Sphinx   | 9.1.1   |
 | docutils | 0.22.4  |
 | Python   | 3.12.16 |
@@ -1890,14 +1893,14 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.20/">0.1.20</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/ge/0.1.21/">0.1.21</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
-git clone https://github.com/thorwhalen/ge && cd ge
-git checkout d9b3f78d157bf48473a0857383bbe015e6520a8b
-pip install "epythet==0.2.22"
+git clone https://github.com/addaix/ge && cd ge
+git checkout 5cf9b7b98835f4203912c0948543590a931d4f79
+pip install "epythet==0.2.23"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
 
@@ -1923,70 +1926,70 @@ Skills are folders holding a `SKILL.md` (the [Agent Skills](https://agentskills.
 Use when asked to work on a GitHub issue, PR, or discussion. Resolves flexible input (URL, folder, number), confirms with the user, prepares context, and guides the workflow.
 
 ```bash
-gh skill install thorwhalen/ge ge --agent claude-code
+gh skill install addaix/ge ge --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge) (bundled with the pip package).
+Source: [`ge/data/skills/ge`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge) (bundled with the pip package).
 
 ### `ge-analyze`
 
 Use when you need to check whether a GitHub issue or PR is still relevant, stale, or already resolved — without preparing full context or downloading media.
 
 ```bash
-gh skill install thorwhalen/ge ge-analyze --agent claude-code
+gh skill install addaix/ge ge-analyze --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-analyze`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-analyze) (bundled with the pip package).
+Source: [`ge/data/skills/ge-analyze`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-analyze) (bundled with the pip package).
 
 ### `ge-autonomous-execution`
 
 Behavioural policy for running unattended. Use when you have been launched in headless / auto-permission mode (e.g. by `ge run-roadmap` or `ge run-triage`) and there is no user available to answer questions. Converts every clarifying question into a logged decision so progress continues.
 
 ```bash
-gh skill install thorwhalen/ge ge-autonomous-execution --agent claude-code
+gh skill install addaix/ge ge-autonomous-execution --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-autonomous-execution`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-autonomous-execution) (bundled with the pip package).
+Source: [`ge/data/skills/ge-autonomous-execution`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-autonomous-execution) (bundled with the pip package).
 
 ### `ge-context`
 
 Use when you need to prepare, read, or refresh full context for a GitHub issue, PR, or discussion — fetching data, downloading media, and writing structured context documents.
 
 ```bash
-gh skill install thorwhalen/ge ge-context --agent claude-code
+gh skill install addaix/ge ge-context --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-context`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-context) (bundled with the pip package).
+Source: [`ge/data/skills/ge-context`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-context) (bundled with the pip package).
 
 ### `ge-cross-repo-triage`
 
 Triage and resolve a cross-repo issue backlog. Use when launched by `ge run-triage` against multiple repos — Phase A classifies and orders issues into a `TriageBacklog`; Phase B executes them one at a time (failing test → confirm red → fix → confirm green → open PR, then stop). Stops at PR; merging is a separate later phase.
 
 ```bash
-gh skill install thorwhalen/ge ge-cross-repo-triage --agent claude-code
+gh skill install addaix/ge ge-cross-repo-triage --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-cross-repo-triage`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-cross-repo-triage) (bundled with the pip package).
+Source: [`ge/data/skills/ge-cross-repo-triage`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-cross-repo-triage) (bundled with the pip package).
 
 ### `ge-roadmap-execution`
 
 Execute a roadmap of tasks end-to-end using GitHub as durable memory. Use when launched against a roadmap issue (typically by `ge run-roadmap`) — take the next todo task, do it, verify it, mark it done, log decisions, and repeat. Survives context exhaustion because each work unit rehydrates from GitHub.
 
 ```bash
-gh skill install thorwhalen/ge ge-roadmap-execution --agent claude-code
+gh skill install addaix/ge ge-roadmap-execution --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-roadmap-execution`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-roadmap-execution) (bundled with the pip package).
+Source: [`ge/data/skills/ge-roadmap-execution`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-roadmap-execution) (bundled with the pip package).
 
 ### `ge-write-issue`
 
 Use when AUTHORING a GitHub issue, comment, or report that a human will read — especially a non-technical stakeholder, a client, or someone outside the repo. Covers what goes in an issue versus a comment, how to layer detail so the reader can stop early, how to ask a question that actually gets answered, and how to assign it so someone is on the hook. Triggers on: ‘open an issue for’, ‘post this to the issue’, ‘ask the client’, ‘report this back’, ‘write it up as an issue’, ‘file a question’, ‘let them know’, or any request to communicate findings outward through GitHub. This is about WRITING issues; ge-analyze and ge-context are about WORKING ON issues that already exist.
 
 ```bash
-gh skill install thorwhalen/ge ge-write-issue --agent claude-code
+gh skill install addaix/ge ge-write-issue --agent claude-code
 ```
 
-Source: [`ge/data/skills/ge-write-issue`](https://github.com/thorwhalen/ge/tree/HEAD/ge/data/skills/ge-write-issue) (bundled with the pip package).
+Source: [`ge/data/skills/ge-write-issue`](https://github.com/addaix/ge/tree/HEAD/ge/data/skills/ge-write-issue) (bundled with the pip package).
 
 The bundled skills are also on disk after `pip install ge`, under the package’s `data/skills/` directory; link them into an agent without network access with `skill link-skills <that directory>`.
 
@@ -1994,16 +1997,16 @@ The bundled skills are also on disk after `pip install ge`, under the package’
 
 Files agents read before working in this repository.
 
-- [`.claude/CLAUDE.md`](https://github.com/thorwhalen/ge/tree/HEAD/.claude/CLAUDE.md): read by Claude Code
+- [`.claude/CLAUDE.md`](https://github.com/addaix/ge/tree/HEAD/.claude/CLAUDE.md): read by Claude Code
 
 ## Machine-readable documentation
 
 This site publishes the same documentation in forms that fit an agent’s context window:
 
-- [`llms.txt`](https://thorwhalen.github.io/ge/llms.txt): an index of every page with a one-line description ([llms.txt](https://llmstxt.org) format)
-- [`ge.md`](https://thorwhalen.github.io/ge/ge.md): the whole documentation as one Markdown file
+- [`llms.txt`](https://addaix.github.io/ge/llms.txt): an index of every page with a one-line description ([llms.txt](https://llmstxt.org) format)
+- [`ge.md`](https://addaix.github.io/ge/ge.md): the whole documentation as one Markdown file
 - `<page>.html.md`: a rendered Markdown twin of every page, advertised from each page’s `<head>` with `<link rel="alternate" type="text/markdown">`
-- [`objects.inv`](https://thorwhalen.github.io/ge/objects.inv): the Sphinx inventory: a symbol-to-URL index (`sphobjinv convert plain objects.inv -`)
+- [`objects.inv`](https://addaix.github.io/ge/objects.inv): the Sphinx inventory: a symbol-to-URL index (`sphobjinv convert plain objects.inv -`)
 
 
 # api.html.md

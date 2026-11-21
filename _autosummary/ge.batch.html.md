@@ -22,7 +22,9 @@ types, unique keys, known references, no dependency cycle), then:
    someone has edited on GitHub since is never overwritten: it is listed in
    `body_conflicts` instead (`force=True` overwrites);
 3. creates a GitHub `blocked_by` dependency edge for every `depends_on`
-   that the blocked issue does not already have.
+   that the blocked issue does not already have. GitHub only accepts issues as
+   blockers: a `depends_on` that names a pull request is skipped and reported in
+   `pr_dependencies` (it is not an error).
 
 `depends_on` takes batch keys and existing issues (`12`, `"#12"`,
 `"owner/repo#12"`). Progress is written to a map file after every step, so
@@ -37,6 +39,7 @@ The map’s shape is stable, for writing the links back into a source document:
  "issues": {"A": {"number": 7, "url": "...", "id": 123, "body_sha": "..."}},
  "edges": [{"blocked": "B", "blocker": "A"}],
  "edge_errors": [{"blocked": "B", "blocker": "#12", "error": "..."}],
+ "pr_dependencies": [{"blocked": "B", "blocker": "#13", "url": "..."}],
  "body_conflicts": ["C"]}
 ```
 
