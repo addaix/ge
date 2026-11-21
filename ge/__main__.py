@@ -317,6 +317,10 @@ def file_batch(
     )
     for e in state["edge_errors"]:
         print(f"edge failed: {e['blocked']} blocked by {e['blocker']}: {e['error']}")
+    for e in state.get("pr_dependencies", ()):
+        print(
+            f"no edge: {e['blocked']} waits on pull request {e['blocker']} (only issues can block)"
+        )
     for key in state["body_conflicts"]:
         print(
             f"not updated (edited on GitHub; --force overwrites): {key} {state['issues'][key]['url']}"

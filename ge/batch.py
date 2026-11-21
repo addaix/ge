@@ -18,7 +18,9 @@ types, unique keys, known references, no dependency cycle), then:
    someone has edited on GitHub since is never overwritten: it is listed in
    ``body_conflicts`` instead (``force=True`` overwrites);
 3. creates a GitHub ``blocked_by`` dependency edge for every ``depends_on``
-   that the blocked issue does not already have.
+   that the blocked issue does not already have. GitHub only accepts issues as
+blockers: a ``depends_on`` that names a pull request is skipped and reported in
+``pr_dependencies`` (it is not an error).
 
 ``depends_on`` takes batch keys and existing issues (``12``, ``"#12"``,
 ``"owner/repo#12"``). Progress is written to a map file after every step, so
@@ -32,6 +34,7 @@ The map's shape is stable, for writing the links back into a source document::
      "issues": {"A": {"number": 7, "url": "...", "id": 123, "body_sha": "..."}},
      "edges": [{"blocked": "B", "blocker": "A"}],
      "edge_errors": [{"blocked": "B", "blocker": "#12", "error": "..."}],
+     "pr_dependencies": [{"blocked": "B", "blocker": "#13", "url": "..."}],
      "body_conflicts": ["C"]}
 
 The batch knows nothing about any document format: produce the records however you like.
@@ -178,6 +181,7 @@ def _load_map(path: Path | None, repo: str) -> dict:
         "issues": {},
         "edges": [],
         "edge_errors": [],
+        "pr_dependencies": [],
         "body_conflicts": [],
     }
     if path and path.exists():
@@ -309,13 +313,19 @@ def file_issues(
     state["edge_errors"] = [
         e for e in state["edge_errors"] if (e["blocked"], e["blocker"]) in wanted
     ]
+    state["pr_dependencies"] = [
+        e
+        for e in state.get("pr_dependencies", [])
+        if (e["blocked"], e["blocker"]) in wanted
+    ]
+    skipped = {(e["blocked"], e["blocker"]) for e in state["pr_dependencies"]}
     done = {(e["blocked"], e["blocker"]) for e in state["edges"]}
     for key in order:  # 3. dependency edges
         number = issues[key]["number"]
         endpoint = f"repos/{repo}/issues/{number}/dependencies/blocked_by"
         existing = None
         for dep in map(str, records[key].get("depends_on", ())):
-            if (key, dep) in done:
+            if (key, dep) in done or (key, dep) in skipped:
                 continue
             state["edge_errors"] = [
                 e
@@ -327,9 +337,20 @@ def file_issues(
                     blocker = issues[dep]["id"]
                 else:
                     m = EXISTING_ISSUE.match(dep)
-                    blocker = api(f"repos/{m['repo'] or repo}/issues/{m['number']}")[
-                        "id"
-                    ]
+                    target = api(f"repos/{m['repo'] or repo}/issues/{m['number']}")
+                    if "pull_request" in target:  # only issues can block
+                        state["pr_dependencies"].append(
+                            {
+                                "blocked": key,
+                                "blocker": dep,
+                                "url": target.get("html_url", ""),
+                            }
+                        )
+                        skipped.add((key, dep))
+                        _save_map(path, state)
+                        log(f"{key}: depends_on {dep} is a pull request; no edge")
+                        continue
+                    blocker = target["id"]
                 if existing is None:
                     existing = {i["id"] for i in api(f"{endpoint}?per_page=100")}
                 if blocker not in existing:
