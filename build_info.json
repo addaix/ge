@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "built_at": "2026-11-21T22:38:03Z",
+  "built_at": "2026-11-22T14:07:34Z",
   "package": {
     "name": "ge",
     "version": "0.1.22",
@@ -9,26 +9,24 @@
   },
   "git": {
     "available": true,
-    "commit": "07ba964c4fe759c112b7184018040da323655873",
-    "short_commit": "07ba964",
+    "commit": "0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
+    "short_commit": "0ca9cd6",
     "branch": "main",
-    "tags": [
-      "0.1.22"
-    ],
+    "tags": [],
     "dirty": false,
     "remote_url": "https://github.com/addaix/ge",
-    "commit_url": "https://github.com/addaix/ge/commit/07ba964c4fe759c112b7184018040da323655873",
+    "commit_url": "https://github.com/addaix/ge/commit/0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
     "error": null
   },
   "ci": {
     "provider": "github",
     "repository": "addaix/ge",
-    "sha": "f92fdf6b8d8806ab21dcfae5d2874e9b6513155d",
+    "sha": "0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
     "sha_in_history": true,
     "ref": "refs/heads/main",
     "ref_name": "main",
-    "run_id": "44957614129",
-    "run_url": "https://github.com/addaix/ge/actions/runs/44957614129",
+    "run_id": "45030973815",
+    "run_url": "https://github.com/addaix/ge/actions/runs/45030973815",
     "server_url": "https://github.com"
   },
   "tools": {
@@ -62,16 +60,14 @@
   },
   "pypi": {
     "checked": true,
-    "latest": "0.1.21",
-    "relation": "ahead",
+    "latest": "0.1.22",
+    "relation": "same",
     "error": null
   },
-  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 07ba964c4fe759c112b7184018040da323655873\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 0ca9cd68fb832a0f0247895110f4f4a030c1ffca\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
   "warnings": [],
   "alignment": {
-    "aligned": false,
-    "notes": [
-      "The documented version (0.1.22) is ahead of the latest release on PyPI (0.1.21): these docs describe unreleased code."
-    ]
+    "aligned": true,
+    "notes": []
   }
 }
