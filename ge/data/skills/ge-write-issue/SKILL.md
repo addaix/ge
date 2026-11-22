@@ -28,6 +28,8 @@ is `misc/docs/github-surfaces-allocation-report.md`. This skill is about the wri
 A reader who stops after zone 1 must still know what is being asked. A reader who stops after
 zone 3 must be able to act.
 
+**Name the domain's jargon.** Issues are read by LLMs that match on terms, and they seed later deep research. Use the field's established terms (the technique and concept names), not only the everyday paraphrase from conversation.
+
 ## Layer with `<details>`, not with comments
 
 ```markdown
