@@ -227,6 +227,11 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><code><span id="line-1">ge<span class="w"> </span>run-roadmap<span class="w"> </span>owner/repo<span class="w"> </span><span class="m">12</span><span class="w"> </span>--cwd<span class="w"> </span>~/proj/pkg<span class="w"> </span>--add-dirs<span class="w"> </span>~/proj/lib<span class="w"> </span>--skills<span class="w"> </span>pkg-dev<span class="w"> </span>--model<span class="w"> </span>sonnet<span class="w"> </span>--effort<span class="w"> </span>high
 </span></code></pre></div>
 </div>
+<section id="when-to-use-claude-code-action-instead">
+<h3>When to use claude-code-action instead<a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#when-to-use-claude-code-action-instead" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#when-to-use-claude-code-action-instead'">¶</a></h3>
+<p><a class="reference external" href="https://github.com/anthropics/claude-code-action" rel="nofollow noopener">claude-code-action<svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a> (and the Copilot coding agent) run one issue in one repository on a hosted runner. Reach for it when the work is a single issue, no machine of yours needs to be awake, and the skills it needs live in that repository (or in a plugin marketplace). Both run the same agent, Claude Code: the difference is where it runs and what it can see, not the model.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ge</span> <span class="pre">run-roadmap</span></code> / <code class="docutils literal notranslate"><span class="pre">ge</span> <span class="pre">run-triage</span></code> are for a <em>sequence</em> of tasks, possibly across repositories, run from your own checkout with your user-level skills and sibling packages, on your subscription, with no secret stored in each repo. A hosted run could become an executor behind the runner (the seam is <code class="docutils literal notranslate"><span class="pre">_spawn_claude</span></code> in <code class="docutils literal notranslate"><span class="pre">ge/run.py</span></code>); that is not built until someone wants it.</p>
+</section>
 <section id="the-memory-model">
 <h3>The memory model<a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#the-memory-model" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#the-memory-model'">¶</a></h3>
 <table class="docutils align-default">
@@ -410,7 +415,7 @@
 
 </section>
 </section>
-<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-11-22 14:07 UTC from <a href="https://github.com/addaix/ge/commit/0ca9cd68fb832a0f0247895110f4f4a030c1ffca">0ca9cd6</a> (main) · ge 0.1.22 · <a href="about-this-build.html">about this build</a></p>
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-11-22 23:04 UTC from <a href="https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68">307ddbe</a> (main) · ge 0.1.22 · <a href="about-this-build.html">about this build</a></p>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
@@ -419,6 +424,7 @@
 </ul>
 </li>
 <li><a :data-current="activeSection === '#autonomous-execution'" class="reference internal" href="#autonomous-execution">Autonomous execution</a><ul>
+<li><a :data-current="activeSection === '#when-to-use-claude-code-action-instead'" class="reference internal" href="#when-to-use-claude-code-action-instead">When to use claude-code-action instead</a></li>
 <li><a :data-current="activeSection === '#the-memory-model'" class="reference internal" href="#the-memory-model">The memory model</a></li>
 </ul>
 </li>

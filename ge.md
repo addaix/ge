@@ -1,4 +1,4 @@
-> built 2026-11-22 14:07 UTC from 0ca9cd6 (main) · ge 0.1.22. Details: build_info.json
+> built 2026-11-22 23:04 UTC from 307ddbe (main) · ge 0.1.22. Details: build_info.json
 
 # index.html.md
 
@@ -94,6 +94,12 @@ Each spawned session sees what the runner scopes for it. It starts in `--cwd` (d
 ```bash
 ge run-roadmap owner/repo 12 --cwd ~/proj/pkg --add-dirs ~/proj/lib --skills pkg-dev --model sonnet --effort high
 ```
+
+### When to use claude-code-action instead
+
+[claude-code-action](https://github.com/anthropics/claude-code-action) (and the Copilot coding agent) run one issue in one repository on a hosted runner. Reach for it when the work is a single issue, no machine of yours needs to be awake, and the skills it needs live in that repository (or in a plugin marketplace). Both run the same agent, Claude Code: the difference is where it runs and what it can see, not the model.
+
+`ge run-roadmap` / `ge run-triage` are for a *sequence* of tasks, possibly across repositories, run from your own checkout with your user-level skills and sibling packages, on your subscription, with no secret stored in each repo. A hosted run could become an executor behind the runner (the seam is `_spawn_claude` in `ge/run.py`); that is not built until someone wants it.
 
 ### The memory model
 
@@ -1846,16 +1852,18 @@ Replace media URLs in markdown with local file paths.
 
 # About this build
 
-This documentation was built on **2026-11-22 14:07 UTC** from commit <a href="https://github.com/addaix/ge/commit/0ca9cd68fb832a0f0247895110f4f4a030c1ffca"><code>0ca9cd6</code></a> on branch <code>main</code>, for **ge 0.1.22** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-22 23:04 UTC** from commit <a href="https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68"><code>307ddbe</code></a> on branch <code>main</code>, for **ge 0.1.22** (from <code>pyproject.toml</code>).
 
-#### NOTE
-Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
+#### WARNING
+The documentation and the package may be misaligned:
+
+- The documented version (0.1.22) is behind the latest release on PyPI (0.1.23): `pip install ge` gives newer code than these docs describe.
 
 ## Source
 
 |                     |                                                                                                                                                  |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/addaix/ge/commit/0ca9cd68fb832a0f0247895110f4f4a030c1ffca"><code>0ca9cd68fb832a0f0247895110f4f4a030c1ffca</code></a> |
+| Commit              | <a href="https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68"><code>307ddbeda96d4e038bef547f9ce1605736b4ca68</code></a> |
 | Branch              | <code>main</code>                                                                                                                                |
 | Tags at this commit | none                                                                                                                                             |
 | Working tree        | clean                                                                                                                                            |
@@ -1866,9 +1874,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>addaix/ge</code>                                                                     |
-| Run          | <a href="https://github.com/addaix/ge/actions/runs/45030973815">45030973815</a>            |
+| Run          | <a href="https://github.com/addaix/ge/actions/runs/45081054467">45081054467</a>            |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>0ca9cd68fb832a0f0247895110f4f4a030c1ffca</code> (in the history of the built commit) |
+| Event commit | <code>307ddbeda96d4e038bef547f9ce1605736b4ca68</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -1893,13 +1901,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.22/">0.1.22</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/ge/0.1.23/">0.1.23</a>, newer than the documented version (0.1.22).
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/addaix/ge && cd ge
-git checkout 0ca9cd68fb832a0f0247895110f4f4a030c1ffca
+git checkout 307ddbeda96d4e038bef547f9ce1605736b4ca68
 pip install "epythet==0.2.23"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

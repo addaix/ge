@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "built_at": "2026-11-22T14:07:34Z",
+  "built_at": "2026-11-22T23:04:22Z",
   "package": {
     "name": "ge",
     "version": "0.1.22",
@@ -9,24 +9,24 @@
   },
   "git": {
     "available": true,
-    "commit": "0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
-    "short_commit": "0ca9cd6",
+    "commit": "307ddbeda96d4e038bef547f9ce1605736b4ca68",
+    "short_commit": "307ddbe",
     "branch": "main",
     "tags": [],
     "dirty": false,
     "remote_url": "https://github.com/addaix/ge",
-    "commit_url": "https://github.com/addaix/ge/commit/0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
+    "commit_url": "https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68",
     "error": null
   },
   "ci": {
     "provider": "github",
     "repository": "addaix/ge",
-    "sha": "0ca9cd68fb832a0f0247895110f4f4a030c1ffca",
+    "sha": "307ddbeda96d4e038bef547f9ce1605736b4ca68",
     "sha_in_history": true,
     "ref": "refs/heads/main",
     "ref_name": "main",
-    "run_id": "45030973815",
-    "run_url": "https://github.com/addaix/ge/actions/runs/45030973815",
+    "run_id": "45081054467",
+    "run_url": "https://github.com/addaix/ge/actions/runs/45081054467",
     "server_url": "https://github.com"
   },
   "tools": {
@@ -60,14 +60,16 @@
   },
   "pypi": {
     "checked": true,
-    "latest": "0.1.22",
-    "relation": "same",
+    "latest": "0.1.23",
+    "relation": "behind",
     "error": null
   },
-  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 0ca9cd68fb832a0f0247895110f4f4a030c1ffca\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 307ddbeda96d4e038bef547f9ce1605736b4ca68\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
   "warnings": [],
   "alignment": {
-    "aligned": true,
-    "notes": []
+    "aligned": false,
+    "notes": [
+      "The documented version (0.1.22) is behind the latest release on PyPI (0.1.23): `pip install ge` gives newer code than these docs describe."
+    ]
   }
 }
