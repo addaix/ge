@@ -89,6 +89,12 @@ Each spawned session sees what the runner scopes for it. It starts in `--cwd` (d
 ge run-roadmap owner/repo 12 --cwd ~/proj/pkg --add-dirs ~/proj/lib --skills pkg-dev --model sonnet --effort high
 ```
 
+### When to use claude-code-action instead
+
+[claude-code-action](https://github.com/anthropics/claude-code-action) (and the Copilot coding agent) run one issue in one repository on a hosted runner. Reach for it when the work is a single issue, no machine of yours needs to be awake, and the skills it needs live in that repository (or in a plugin marketplace). Both run the same agent, Claude Code: the difference is where it runs and what it can see, not the model.
+
+`ge run-roadmap` / `ge run-triage` are for a *sequence* of tasks, possibly across repositories, run from your own checkout with your user-level skills and sibling packages, on your subscription, with no secret stored in each repo. A hosted run could become an executor behind the runner (the seam is `_spawn_claude` in `ge/run.py`); that is not built until someone wants it.
+
 ### The memory model
 
 | Store | Backing | Use for |
