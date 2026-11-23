@@ -1,4 +1,4 @@
-> built 2026-11-23 04:58 UTC from 7037d44 (main) · ge 0.1.23. Details: build_info.json
+> built 2026-11-23 06:54 UTC from a1822c5 (main) · ge 0.1.24. Details: build_info.json
 
 # index.html.md
 
@@ -1852,18 +1852,16 @@ Replace media URLs in markdown with local file paths.
 
 # About this build
 
-This documentation was built on **2026-11-23 04:58 UTC** from commit <a href="https://github.com/addaix/ge/commit/7037d44b6b4fb0d43a0b911052b91d25420e0242"><code>7037d44</code></a> on branch <code>main</code>, for **ge 0.1.23** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-23 06:54 UTC** from commit <a href="https://github.com/addaix/ge/commit/a1822c5c77343c1e1290c52addf98c0dfad64b16"><code>a1822c5</code></a> on branch <code>main</code>, for **ge 0.1.24** (from <code>pyproject.toml</code>).
 
-#### WARNING
-The documentation and the package may be misaligned:
-
-- The documented version (0.1.23) is behind the latest release on PyPI (0.1.24): `pip install ge` gives newer code than these docs describe.
+#### NOTE
+Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
 
 ## Source
 
 |                     |                                                                                                                                                  |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/addaix/ge/commit/7037d44b6b4fb0d43a0b911052b91d25420e0242"><code>7037d44b6b4fb0d43a0b911052b91d25420e0242</code></a> |
+| Commit              | <a href="https://github.com/addaix/ge/commit/a1822c5c77343c1e1290c52addf98c0dfad64b16"><code>a1822c5c77343c1e1290c52addf98c0dfad64b16</code></a> |
 | Branch              | <code>main</code>                                                                                                                                |
 | Tags at this commit | none                                                                                                                                             |
 | Working tree        | clean                                                                                                                                            |
@@ -1874,9 +1872,9 @@ The documentation and the package may be misaligned:
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>addaix/ge</code>                                                                     |
-| Run          | <a href="https://github.com/addaix/ge/actions/runs/45114793016">45114793016</a>            |
+| Run          | <a href="https://github.com/addaix/ge/actions/runs/45127135672">45127135672</a>            |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>7037d44b6b4fb0d43a0b911052b91d25420e0242</code> (in the history of the built commit) |
+| Event commit | <code>a1822c5c77343c1e1290c52addf98c0dfad64b16</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -1901,13 +1899,13 @@ The documentation and the package may be misaligned:
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.24/">0.1.24</a>, newer than the documented version (0.1.23).
+Latest release: <a href="https://pypi.org/project/ge/0.1.24/">0.1.24</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/addaix/ge && cd ge
-git checkout 7037d44b6b4fb0d43a0b911052b91d25420e0242
+git checkout a1822c5c77343c1e1290c52addf98c0dfad64b16
 pip install "epythet==0.2.23"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
