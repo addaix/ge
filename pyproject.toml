@@ -57,6 +57,7 @@ convention = "google"
 minversion = "6.0"
 testpaths = ["tests"]
 doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+markers = ["network: runs the real `gh` against github.com (skipped unless GE_LIVE=1)"]
 
 [tool.wads.ci]
 project_name = ""
