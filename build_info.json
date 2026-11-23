@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
-  "built_at": "2026-11-22T23:04:22Z",
+  "built_at": "2026-11-23T04:58:22Z",
   "package": {
     "name": "ge",
-    "version": "0.1.22",
+    "version": "0.1.23",
     "display_name": "ge",
     "source": "pyproject.toml"
   },
   "git": {
     "available": true,
-    "commit": "307ddbeda96d4e038bef547f9ce1605736b4ca68",
-    "short_commit": "307ddbe",
+    "commit": "7037d44b6b4fb0d43a0b911052b91d25420e0242",
+    "short_commit": "7037d44",
     "branch": "main",
     "tags": [],
     "dirty": false,
     "remote_url": "https://github.com/addaix/ge",
-    "commit_url": "https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68",
+    "commit_url": "https://github.com/addaix/ge/commit/7037d44b6b4fb0d43a0b911052b91d25420e0242",
     "error": null
   },
   "ci": {
     "provider": "github",
     "repository": "addaix/ge",
-    "sha": "307ddbeda96d4e038bef547f9ce1605736b4ca68",
+    "sha": "7037d44b6b4fb0d43a0b911052b91d25420e0242",
     "sha_in_history": true,
     "ref": "refs/heads/main",
     "ref_name": "main",
-    "run_id": "45081054467",
-    "run_url": "https://github.com/addaix/ge/actions/runs/45081054467",
+    "run_id": "45114793016",
+    "run_url": "https://github.com/addaix/ge/actions/runs/45114793016",
     "server_url": "https://github.com"
   },
   "tools": {
@@ -60,16 +60,16 @@
   },
   "pypi": {
     "checked": true,
-    "latest": "0.1.23",
+    "latest": "0.1.24",
     "relation": "behind",
     "error": null
   },
-  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 307ddbeda96d4e038bef547f9ce1605736b4ca68\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "reproduce": "git clone https://github.com/addaix/ge && cd ge\ngit checkout 7037d44b6b4fb0d43a0b911052b91d25420e0242\npip install \"epythet==0.2.23\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
   "warnings": [],
   "alignment": {
     "aligned": false,
     "notes": [
-      "The documented version (0.1.22) is behind the latest release on PyPI (0.1.23): `pip install ge` gives newer code than these docs describe."
+      "The documented version (0.1.23) is behind the latest release on PyPI (0.1.24): `pip install ge` gives newer code than these docs describe."
     ]
   }
 }

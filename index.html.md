@@ -36,7 +36,7 @@ The agent resolves whatever you give it, **confirms** what it understood before 
 4. **Asks you** before working on ambiguous or likely-resolved issues
 5. **Works on the issue** — creates a branch, makes changes, submits a PR
 
-Six skills are installed:
+Seven skills are installed:
 
 | Skill                     | Purpose                                                                 |
 |---------------------------|-------------------------------------------------------------------------|

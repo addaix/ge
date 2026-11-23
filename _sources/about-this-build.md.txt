@@ -5,19 +5,19 @@ orphan: true
 
 # About this build
 
-This documentation was built on **2026-11-22 23:04 UTC** from commit <a href="https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68"><code>307ddbe</code></a> on branch <code>main</code>, for **ge 0.1.22** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-23 04:58 UTC** from commit <a href="https://github.com/addaix/ge/commit/7037d44b6b4fb0d43a0b911052b91d25420e0242"><code>7037d44</code></a> on branch <code>main</code>, for **ge 0.1.23** (from <code>pyproject.toml</code>).
 
 :::{warning}
 The documentation and the package may be misaligned:
 
-- The documented version (0.1.22) is behind the latest release on PyPI (0.1.23): `pip install ge` gives newer code than these docs describe.
+- The documented version (0.1.23) is behind the latest release on PyPI (0.1.24): `pip install ge` gives newer code than these docs describe.
 :::
 
 ## Source
 
 | | |
 |---|---|
-| Commit | <a href="https://github.com/addaix/ge/commit/307ddbeda96d4e038bef547f9ce1605736b4ca68"><code>307ddbeda96d4e038bef547f9ce1605736b4ca68</code></a> |
+| Commit | <a href="https://github.com/addaix/ge/commit/7037d44b6b4fb0d43a0b911052b91d25420e0242"><code>7037d44b6b4fb0d43a0b911052b91d25420e0242</code></a> |
 | Branch | <code>main</code> |
 | Tags at this commit | none |
 | Working tree | clean |
@@ -28,9 +28,9 @@ The documentation and the package may be misaligned:
 | | |
 |---|---|
 | Repository | <code>addaix/ge</code> |
-| Run | <a href="https://github.com/addaix/ge/actions/runs/45081054467">45081054467</a> |
+| Run | <a href="https://github.com/addaix/ge/actions/runs/45114793016">45114793016</a> |
 | Ref | <code>refs/heads/main</code> |
-| Event commit | <code>307ddbeda96d4e038bef547f9ce1605736b4ca68</code> (in the history of the built commit) |
+| Event commit | <code>7037d44b6b4fb0d43a0b911052b91d25420e0242</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -55,13 +55,13 @@ The documentation and the package may be misaligned:
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.23/">0.1.23</a>, newer than the documented version (0.1.22).
+Latest release: <a href="https://pypi.org/project/ge/0.1.24/">0.1.24</a>, newer than the documented version (0.1.23).
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/addaix/ge && cd ge
-git checkout 307ddbeda96d4e038bef547f9ce1605736b4ca68
+git checkout 7037d44b6b4fb0d43a0b911052b91d25420e0242
 pip install "epythet==0.2.23"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
