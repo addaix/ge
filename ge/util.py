@@ -48,9 +48,9 @@ def gh_api(
         raise ValueError("gh_api: pass params or body, not both")
     _check_gh()
     cmd = ["gh", "api", endpoint]
-    if (
-        method != "GET" or body is not None
-    ):  # gh would turn a GET with input into a POST
+    if method != "GET" or body is not None or params:
+        # gh turns a request with fields or input into a POST unless the method
+        # is explicit; with -X GET it sends the fields as the query string.
         cmd.extend(["-X", method])
     if paginate:
         cmd.append("--paginate")

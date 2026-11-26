@@ -170,6 +170,23 @@ class TestAnalyzeIssue:
         assert any('stale' in s.lower() or 'activity' in s.lower()
                     for s in result['signals'])
 
+    def test_status_reported(self):
+        issue = _make_issue(updated_days_ago=2)
+        issue['status'] = {'name': 'Todo', 'category': 'planned', 'id': 3}
+        result = self._run(issue)
+        assert result['status'] == 'Todo'
+        assert 'Status: Todo' in result['signals']
+
+    def test_stale_claim_flagged(self):
+        issue = _make_issue(created_days_ago=60, updated_days_ago=30)
+        issue['status'] = {'name': 'In progress', 'category': 'started', 'id': 4}
+        result = self._run(issue)
+        assert any('claim may be stale' in s for s in result['signals'])
+
+    def test_no_status_when_unavailable(self):
+        result = self._run(_make_issue())
+        assert result['status'] is None and result['state_reason'] is None
+
     def test_referenced_files_extracted(self):
         issue = _make_issue(body='Check `src/app.py` for the root cause')
         result = self._run(issue)

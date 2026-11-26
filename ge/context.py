@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from datetime import datetime, timezone
 
+from ge.status import status_name
 from ge.github import (
     get_issue,
     get_pr,
@@ -96,6 +97,8 @@ def prepare_issue(
         "url": issue.get("html_url", ""),
         "title": issue.get("title", ""),
         "state": issue.get("state", ""),
+        "state_reason": issue.get("state_reason"),
+        "status": status_name(issue),
         "author": issue.get("user", {}).get("login", ""),
         "created_at": issue.get("created_at", ""),
         "updated_at": issue.get("updated_at", ""),
@@ -265,6 +268,8 @@ def render_issue_context(ctx):
     a(f"**Repo:** {ctx['repo']}  ")
     a(f"**URL:** {ctx['url']}  ")
     a(f"**State:** {ctx['state']}  ")
+    if ctx.get("status"):
+        a(f"**Status:** {ctx['status']}  ")
     a(f"**Author:** @{ctx['author']}  ")
     a(f"**Created:** {ctx['created_at']}  ")
     a(f"**Labels:** {', '.join(ctx['labels']) or 'none'}")

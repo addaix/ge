@@ -266,6 +266,53 @@ def resolve(target: str, *, current_repo: str = None):
     print(json.dumps(result, indent=2))
 
 
+def status(repo: str, number: int):
+    """Show an issue's native GitHub status (Backlog, Todo, In progress, In review,
+    Done, Not planned, Duplicate), or "(no status)".
+
+    Example:
+        ge status owner/repo 42
+    """
+    from ge.status import issue_status
+
+    print(issue_status(repo, number) or "(no status)")
+
+
+def set_status(repo: str, number: int, status: str, *, duplicate_of: int = None):
+    """Set an issue's native GitHub status; GitHub closes or reopens it to match.
+
+    Case, hyphens and underscores are ignored; Duplicate needs --duplicate-of.
+
+    Examples:
+        ge set-status owner/repo 42 in-progress
+        ge set-status owner/repo 42 duplicate --duplicate-of 17
+    """
+    from ge.status import set_issue_status
+
+    print(json.dumps(set_issue_status(repo, number, status, duplicate_of=duplicate_of)))
+
+def in_status(
+    status: str,
+    *,
+    repo: str = None,
+    owner: str = None,
+    query: str = "",
+    limit: int = 100,
+):
+    """List issues in one native status across a repo or a whole owner (JSON lines).
+
+    Examples:
+        ge in-status "In progress" --owner thorwhalen
+        ge in-status todo --repo owner/repo --query 'label:bug'
+    """
+    from ge.status import issues_with_status
+
+    for item in issues_with_status(
+        status, repo=repo, owner=owner, extra_query=query, limit=limit
+    ):
+        print(json.dumps(item))
+
+
 def file_batch(
     records: str,
     repo: str,
@@ -565,6 +612,9 @@ _cli_commands = [
     describe_images,
     copy_images,
     resolve,
+    status,
+    set_status,
+    in_status,
     file_batch,
     install_skills,
     uninstall_skills,

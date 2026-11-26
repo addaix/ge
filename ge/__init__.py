@@ -38,6 +38,13 @@ from ge.media import (
     copy_images_to_clipboard,
 )
 from ge.util import parse_github_url, resolve_target
+from ge.status import (
+    ISSUE_STATUSES,
+    issue_status,
+    set_issue_status,
+    issues_with_status,
+    planning_statuses,
+)
 from ge.memory import (
     RoadmapStore,
     DecisionLog,
@@ -195,6 +202,11 @@ def uninstall_skills(*, target_dir=None):
 
 
 __all__ = [
+    "ISSUE_STATUSES",
+    "issue_status",
+    "set_issue_status",
+    "issues_with_status",
+    "planning_statuses",
     "prepare",
     "prepare_issue",
     "prepare_pr",

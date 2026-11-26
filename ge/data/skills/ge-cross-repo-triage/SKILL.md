@@ -74,7 +74,11 @@ Iterate `backlog` in order. For each `fixable` entry:
    you skipped).
 
 For `stale` / `closeable` entries: in Phase B, post a comment on the
-issue explaining your conclusion and (if confident) close it. Closing is
+issue explaining your conclusion and (if confident) close it with the
+right reason: `ge set-status <repo> <n> "not planned"` for stale,
+`done` for already fixed, `duplicate --duplicate-of <m>` for a duplicate
+(where statuses are unavailable, `gh issue close --reason`). Skip an issue
+whose status is `In progress` or `In review`: someone has claimed it. Closing is
 reversible — re-opening is one click — so it's not in the
 destructive-and-irreversible bucket.
 
