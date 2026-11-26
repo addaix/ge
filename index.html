@@ -90,6 +90,7 @@
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/ge.media.html">ge.media</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/ge.memory.html">ge.memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/ge.run.html">ge.run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/ge.status.html">ge.status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/ge.util.html">ge.util</a></li>
 </ul>
 </li>
@@ -329,9 +330,12 @@
 </span><span id="line-11"><span class="n">ge</span> <span class="n">describe</span><span class="o">-</span><span class="n">images</span> <span class="o">&lt;</span><span class="n">img</span><span class="o">&gt;...</span>        <span class="n">Describe</span> <span class="n">images</span> <span class="n">via</span> <span class="n">Claude</span> <span class="n">API</span> <span class="p">(</span><span class="n">vision</span><span class="p">)</span>
 </span><span id="line-12"><span class="n">ge</span> <span class="n">copy</span><span class="o">-</span><span class="n">images</span> <span class="o">&lt;</span><span class="n">img</span><span class="o">&gt;...</span>            <span class="n">Create</span> <span class="n">montage</span> <span class="o">+</span> <span class="n">copy</span> <span class="n">to</span> <span class="n">clipboard</span> <span class="p">(</span><span class="n">macOS</span><span class="p">)</span>
 </span><span id="line-13"><span class="n">ge</span> <span class="n">resolve</span> <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span>                <span class="n">Resolve</span> <span class="n">a</span> <span class="n">URL</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="ow">or</span> <span class="n">number</span> <span class="n">to</span> <span class="n">structured</span> <span class="n">target</span>
-</span><span id="line-14"><span class="n">ge</span> <span class="n">file</span><span class="o">-</span><span class="n">batch</span> <span class="o">&lt;</span><span class="n">records</span><span class="o">.</span><span class="n">json</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">repo</span><span class="o">&gt;</span>  <span class="n">File</span> <span class="n">related</span> <span class="n">issues</span><span class="p">:</span> <span class="n">dependency</span> <span class="n">order</span><span class="p">,</span> <span class="p">{</span><span class="c1">#KEY} refs, blocked_by edges (resumable)</span>
-</span><span id="line-15"><span class="n">ge</span> <span class="n">install</span><span class="o">-</span><span class="n">skills</span>                  <span class="n">Register</span> <span class="n">skills</span> <span class="k">with</span> <span class="n">Claude</span> <span class="n">Code</span> <span class="p">(</span><span class="o">~/.</span><span class="n">claude</span><span class="o">/</span><span class="n">skills</span><span class="o">/</span><span class="p">)</span>
-</span><span id="line-16"><span class="n">ge</span> <span class="n">uninstall</span><span class="o">-</span><span class="n">skills</span>                <span class="n">Remove</span> <span class="n">ge</span> <span class="n">skill</span> <span class="n">symlinks</span>
+</span><span id="line-14"><span class="n">ge</span> <span class="n">status</span> <span class="o">&lt;</span><span class="n">repo</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">N</span><span class="o">&gt;</span>               <span class="n">An</span> <span class="n">issue</span><span class="s1">'s native status (Backlog, Todo, In progress, ...)</span>
+</span><span id="line-15"><span class="n">ge</span> <span class="nb">set</span><span class="o">-</span><span class="n">status</span> <span class="o">&lt;</span><span class="n">repo</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">N</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">status</span><span class="o">&gt;</span>  <span class="n">Set</span> <span class="n">it</span><span class="p">;</span> <span class="n">GitHub</span> <span class="n">closes</span><span class="o">/</span><span class="n">reopens</span> <span class="n">to</span> <span class="n">match</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="ow">in</span><span class="o">-</span><span class="n">progress</span><span class="p">,</span> <span class="n">done</span><span class="p">)</span>
+</span><span id="line-16"><span class="n">ge</span> <span class="ow">in</span><span class="o">-</span><span class="n">status</span> <span class="o">&lt;</span><span class="n">status</span><span class="o">&gt;</span> <span class="o">--</span><span class="n">owner</span> <span class="o">&lt;</span><span class="n">o</span><span class="o">&gt;</span>  <span class="n">Issues</span> <span class="ow">in</span> <span class="n">one</span> <span class="n">status</span> <span class="n">across</span> <span class="n">an</span> <span class="n">owner</span> <span class="p">(</span><span class="ow">or</span> <span class="o">--</span><span class="n">repo</span><span class="p">)</span>
+</span><span id="line-17"><span class="n">ge</span> <span class="n">file</span><span class="o">-</span><span class="n">batch</span> <span class="o">&lt;</span><span class="n">records</span><span class="o">.</span><span class="n">json</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">repo</span><span class="o">&gt;</span>  <span class="n">File</span> <span class="n">related</span> <span class="n">issues</span><span class="p">:</span> <span class="n">dependency</span> <span class="n">order</span><span class="p">,</span> <span class="p">{</span><span class="c1">#KEY} refs, blocked_by edges (resumable)</span>
+</span><span id="line-18"><span class="n">ge</span> <span class="n">install</span><span class="o">-</span><span class="n">skills</span>                  <span class="n">Register</span> <span class="n">skills</span> <span class="k">with</span> <span class="n">Claude</span> <span class="n">Code</span> <span class="p">(</span><span class="o">~/.</span><span class="n">claude</span><span class="o">/</span><span class="n">skills</span><span class="o">/</span><span class="p">)</span>
+</span><span id="line-19"><span class="n">ge</span> <span class="n">uninstall</span><span class="o">-</span><span class="n">skills</span>                <span class="n">Remove</span> <span class="n">ge</span> <span class="n">skill</span> <span class="n">symlinks</span>
 </span></code></pre></div>
 </div>
 </section>
@@ -401,21 +405,22 @@
 </span><span id="line-9">├── memory.py        # GitHub-backed memory: RoadmapStore, DecisionLog, TriageBacklog
 </span><span id="line-10">├── run.py           # Autonomous runner: launches `claude` in a loop
 </span><span id="line-11">├── batch.py         # File a batch of related issues with dependency edges
-</span><span id="line-12">└── data/skills/     # Claude Code skills (symlinked by install-skills)
-</span><span id="line-13">    ├── ge/                     # Full workflow skill
-</span><span id="line-14">    ├── ge-analyze/             # Triage/staleness skill
-</span><span id="line-15">    ├── ge-context/             # Context preparation skill
-</span><span id="line-16">    ├── ge-autonomous-execution/  # Unattended-mode behaviour policy
-</span><span id="line-17">    ├── ge-roadmap-execution/     # Drive a roadmap issue end-to-end
-</span><span id="line-18">    ├── ge-cross-repo-triage/     # Multi-repo triage and resolution
-</span><span id="line-19">    └── ge-write-issue/           # Authoring issues for human readers
+</span><span id="line-12">├── status.py        # GitHub's native issue statuses: read, set, search
+</span><span id="line-13">└── data/skills/     # Claude Code skills (symlinked by install-skills)
+</span><span id="line-14">    ├── ge/                     # Full workflow skill
+</span><span id="line-15">    ├── ge-analyze/             # Triage/staleness skill
+</span><span id="line-16">    ├── ge-context/             # Context preparation skill
+</span><span id="line-17">    ├── ge-autonomous-execution/  # Unattended-mode behaviour policy
+</span><span id="line-18">    ├── ge-roadmap-execution/     # Drive a roadmap issue end-to-end
+</span><span id="line-19">    ├── ge-cross-repo-triage/     # Multi-repo triage and resolution
+</span><span id="line-20">    └── ge-write-issue/           # Authoring issues for human readers
 </span></code></pre></div>
 </div>
 <p class="epythet-aggregates">This documentation as a single file: <a href="ge.md">ge.md</a> (Markdown, for agents).</p>
 
 </section>
 </section>
-<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-11-23 06:54 UTC from <a href="https://github.com/addaix/ge/commit/a1822c5c77343c1e1290c52addf98c0dfad64b16">a1822c5</a> (main) · ge 0.1.24 · <a href="about-this-build.html">about this build</a></p>
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-11-26 12:50 UTC from <a href="https://github.com/addaix/ge/commit/ce4175e359cd6775e0acb117eaa46a9223a10939">ce4175e</a> (main) · ge 0.1.25 · <a href="about-this-build.html">about this build</a></p>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
@@ -451,7 +456,7 @@
 </div>
 </footer>
 </div>
-<script src="_static/documentation_options.js?v=ebdbb45b"></script>
+<script src="_static/documentation_options.js?v=4fa33042"></script>
 <script src="_static/doctools.js?v=fd6eb6e6"></script>
 <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script src="_static/clipboard.min.js?v=a7894cd8"></script>

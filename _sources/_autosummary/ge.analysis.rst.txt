@@ -4,6 +4,12 @@ ge.analysis
 .. automodule:: ge.analysis
 
    
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      STALE_CLAIM_DAYS
+   
    .. rubric:: Functions
 
    .. autosummary::

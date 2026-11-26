@@ -91,6 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ge.media.html">ge.media</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.memory.html">ge.memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.run.html">ge.run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ge.status.html">ge.status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.util.html">ge.util</a></li>
 </ul>
 </li>
@@ -171,6 +172,9 @@ private repo access is handled by the user’s existing gh auth.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ge.github.get_timeline" title="ge.github.get_timeline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_timeline</span></code></a>(repo, number)</p></td>
 <td><p>Fetch the issue/PR timeline (events: referenced, closed, labeled, ...).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.github.mentions_issue" title="ge.github.mentions_issue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mentions_issue</span></code></a>(text, number)</p></td>
+<td><p>Whether <em>text</em> references issue <em>number</em> as <code class="docutils literal notranslate"><span class="pre">#number</span></code> (GitHub search ignores the <code class="docutils literal notranslate"><span class="pre">#</span></code>, so a search for it also matches the bare number).</p></td>
 </tr>
 </tbody>
 </table>
@@ -289,6 +293,18 @@ for PRs mentioning the issue number.</p>
 </span></code></pre></div>
 </div>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="ge.github.mentions_issue">
+<span class="sig-prename descclassname"><span class="pre">ge.github.</span></span><span class="sig-name descname"><span class="pre">mentions_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/github.html#mentions_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.github.mentions_issue" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.github.mentions_issue'">¶</a></dt>
+<dd><p>Whether <em>text</em> references issue <em>number</em> as <code class="docutils literal notranslate"><span class="pre">#number</span></code> (GitHub search
+ignores the <code class="docutils literal notranslate"><span class="pre">#</span></code>, so a search for it also matches the bare number).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="gp">&gt;&gt;&gt; </span><span class="n">mentions_issue</span><span class="p">(</span><span class="s1">'Fixes #12.'</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">mentions_issue</span><span class="p">(</span><span class="s1">'see #123'</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> <span class="n">mentions_issue</span><span class="p">(</span><span class="s1">'v12'</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+</span><span id="line-2"><span class="go">(True, False, False)</span>
+</span><span id="line-3"><span class="gp">&gt;&gt;&gt; </span><span class="n">mentions_issue</span><span class="p">(</span><span class="s1">'closes owner/repo#12'</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+</span><span id="line-4"><span class="go">True</span>
+</span></code></pre></div>
+</div>
+</dd></dl>
 </section>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
@@ -307,6 +323,7 @@ for PRs mentioning the issue number.</p>
 <li><a :data-current="activeSection === '#ge.github.get_review_comments'" class="reference internal" href="#ge.github.get_review_comments"><code class="docutils literal notranslate"><span class="pre">get_review_comments()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.github.get_reviews'" class="reference internal" href="#ge.github.get_reviews"><code class="docutils literal notranslate"><span class="pre">get_reviews()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.github.get_timeline'" class="reference internal" href="#ge.github.get_timeline"><code class="docutils literal notranslate"><span class="pre">get_timeline()</span></code></a></li>
+<li><a :data-current="activeSection === '#ge.github.mentions_issue'" class="reference internal" href="#ge.github.mentions_issue"><code class="docutils literal notranslate"><span class="pre">mentions_issue()</span></code></a></li>
 </ul>
 </div>
 </aside>
@@ -320,7 +337,7 @@ for PRs mentioning the issue number.</p>
 </div>
 </footer>
 </div>
-<script src="../_static/documentation_options.js?v=ebdbb45b"></script>
+<script src="../_static/documentation_options.js?v=4fa33042"></script>
 <script src="../_static/doctools.js?v=fd6eb6e6"></script>
 <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

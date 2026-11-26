@@ -8,6 +8,10 @@
 
    .. autosummary::
    
+      issue_status
+      set_issue_status
+      issues_with_status
+      planning_statuses
       prepare
       prepare_issue
       prepare_pr
@@ -57,4 +61,5 @@
    media
    memory
    run
+   status
    util

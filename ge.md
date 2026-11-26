@@ -1,4 +1,4 @@
-> built 2026-11-23 06:54 UTC from a1822c5 (main) · ge 0.1.24. Details: build_info.json
+> built 2026-11-26 12:50 UTC from ce4175e (main) · ge 0.1.25. Details: build_info.json
 
 # index.html.md
 
@@ -183,6 +183,9 @@ ge video-frames <video>            Extract frames (scene detection by default)
 ge describe-images <img>...        Describe images via Claude API (vision)
 ge copy-images <img>...            Create montage + copy to clipboard (macOS)
 ge resolve <target>                Resolve a URL, folder, or number to structured target
+ge status <repo> <N>               An issue's native status (Backlog, Todo, In progress, ...)
+ge set-status <repo> <N> <status>  Set it; GitHub closes/reopens to match (e.g. in-progress, done)
+ge in-status <status> --owner <o>  Issues in one status across an owner (or --repo)
 ge file-batch <records.json> <repo>  File related issues: dependency order, {#KEY} refs, blocked_by edges (resumable)
 ge install-skills                  Register skills with Claude Code (~/.claude/skills/)
 ge uninstall-skills                Remove ge skill symlinks
@@ -258,6 +261,7 @@ ge/
 ├── memory.py        # GitHub-backed memory: RoadmapStore, DecisionLog, TriageBacklog
 ├── run.py           # Autonomous runner: launches `claude` in a loop
 ├── batch.py         # File a batch of related issues with dependency edges
+├── status.py        # GitHub's native issue statuses: read, set, search
 └── data/skills/     # Claude Code skills (symlinked by install-skills)
     ├── ge/                     # Full workflow skill
     ├── ge-analyze/             # Triage/staleness skill
@@ -280,20 +284,31 @@ Issue and PR analysis: staleness, relevance, and state assessment.
 Examines an issue or PR to determine if it’s still relevant, already fixed,
 or needs further investigation before work begins.
 
+### Module Attributes
+
+| [`STALE_CLAIM_DAYS`](_autosummary/ge.analysis.html.md#ge.analysis.STALE_CLAIM_DAYS)   | Days without activity after which an In progress / In review issue is flagged.   |
+|---------------------------------------------------------------------|----------------------------------------------------------------------------------|
+
 ### Functions
 
-| [`analyze_issue`](_autosummary/ge.analysis.html.md#ge.analysis.analyze_issue)(repo, number)                  | Analyze an issue for staleness and current relevance.                   |
+| [`analyze_issue`](_autosummary/ge.analysis.html.md#ge.analysis.analyze_issue)(repo, number, \*[, ...])       | Analyze an issue for staleness and current relevance.                   |
 |-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
 | [`analyze_pr`](_autosummary/ge.analysis.html.md#ge.analysis.analyze_pr)(repo, number)                     | Analyze a PR for review context and merge readiness.                    |
 | [`check_referenced_files`](_autosummary/ge.analysis.html.md#ge.analysis.check_referenced_files)(repo, file_paths, \*) | Check if files mentioned in an issue still exist on the default branch. |
 
-### ge.analysis.analyze_issue(repo, number)
+### ge.analysis.STALE_CLAIM_DAYS *= 14*
+
+Days without activity after which an In progress / In review issue is flagged.
+
+### ge.analysis.analyze_issue(repo, number, , stale_claim_days=14)
 
 Analyze an issue for staleness and current relevance.
 
 Returns a dict with:
 
 > - state: open/closed
+> - state_reason: completed / not_planned / duplicate / reopened, or None
+> - status: GitHub’s native status (Backlog, Todo, In progress, …), or None
 > - age_days: days since creation
 > - last_activity_days: days since last comment/event
 > - labels: list of label names
@@ -547,21 +562,22 @@ private repo access is handled by the user’s existing gh auth.
 
 ### Functions
 
-| [`find_related_commits`](_autosummary/ge.github.html.md#ge.github.find_related_commits)(repo, issue_number, \*)   | Find recent commits that reference this issue number.                   |
-|-------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [`find_related_prs`](_autosummary/ge.github.html.md#ge.github.find_related_prs)(repo, issue_number)           | Find PRs that reference or close this issue.                            |
-| [`get_comments`](_autosummary/ge.github.html.md#ge.github.get_comments)(repo, number)                     | Fetch all comments on an issue or PR.                                   |
-| [`get_commit_status`](_autosummary/ge.github.html.md#ge.github.get_commit_status)(repo, ref)                   | Fetch the combined commit status (CI checks) for a git ref.             |
-| [`get_default_branch`](_autosummary/ge.github.html.md#ge.github.get_default_branch)(repo)                       | Get the default branch name for a repo.                                 |
-| [`get_discussion`](_autosummary/ge.github.html.md#ge.github.get_discussion)(repo, number)                   | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API). |
-| [`get_file_at_ref`](_autosummary/ge.github.html.md#ge.github.get_file_at_ref)(repo, path, \*[, ref])         | Fetch a file's content at a specific git ref (branch, tag, sha).        |
-| [`get_issue`](_autosummary/ge.github.html.md#ge.github.get_issue)(repo, number)                        | Fetch a GitHub issue with body, labels, assignees, state, etc.          |
-| [`get_pr`](_autosummary/ge.github.html.md#ge.github.get_pr)(repo, number)                           | Fetch a GitHub pull request with body, diff stats, merge state, etc.    |
-| [`get_pr_diff`](_autosummary/ge.github.html.md#ge.github.get_pr_diff)(repo, number)                      | Fetch the raw diff of a PR.                                             |
-| [`get_pr_files`](_autosummary/ge.github.html.md#ge.github.get_pr_files)(repo, number)                     | Fetch the list of files changed in a PR.                                |
-| [`get_review_comments`](_autosummary/ge.github.html.md#ge.github.get_review_comments)(repo, number)              | Fetch inline review comments on a PR (code-level comments).             |
-| [`get_reviews`](_autosummary/ge.github.html.md#ge.github.get_reviews)(repo, number)                      | Fetch PR reviews (approved, changes requested, etc.).                   |
-| [`get_timeline`](_autosummary/ge.github.html.md#ge.github.get_timeline)(repo, number)                     | Fetch the issue/PR timeline (events: referenced, closed, labeled, ...). |
+| [`find_related_commits`](_autosummary/ge.github.html.md#ge.github.find_related_commits)(repo, issue_number, \*)   | Find recent commits that reference this issue number.                                                                                   |
+|-------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| [`find_related_prs`](_autosummary/ge.github.html.md#ge.github.find_related_prs)(repo, issue_number)           | Find PRs that reference or close this issue.                                                                                            |
+| [`get_comments`](_autosummary/ge.github.html.md#ge.github.get_comments)(repo, number)                     | Fetch all comments on an issue or PR.                                                                                                   |
+| [`get_commit_status`](_autosummary/ge.github.html.md#ge.github.get_commit_status)(repo, ref)                   | Fetch the combined commit status (CI checks) for a git ref.                                                                             |
+| [`get_default_branch`](_autosummary/ge.github.html.md#ge.github.get_default_branch)(repo)                       | Get the default branch name for a repo.                                                                                                 |
+| [`get_discussion`](_autosummary/ge.github.html.md#ge.github.get_discussion)(repo, number)                   | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API).                                                                 |
+| [`get_file_at_ref`](_autosummary/ge.github.html.md#ge.github.get_file_at_ref)(repo, path, \*[, ref])         | Fetch a file's content at a specific git ref (branch, tag, sha).                                                                        |
+| [`get_issue`](_autosummary/ge.github.html.md#ge.github.get_issue)(repo, number)                        | Fetch a GitHub issue with body, labels, assignees, state, etc.                                                                          |
+| [`get_pr`](_autosummary/ge.github.html.md#ge.github.get_pr)(repo, number)                           | Fetch a GitHub pull request with body, diff stats, merge state, etc.                                                                    |
+| [`get_pr_diff`](_autosummary/ge.github.html.md#ge.github.get_pr_diff)(repo, number)                      | Fetch the raw diff of a PR.                                                                                                             |
+| [`get_pr_files`](_autosummary/ge.github.html.md#ge.github.get_pr_files)(repo, number)                     | Fetch the list of files changed in a PR.                                                                                                |
+| [`get_review_comments`](_autosummary/ge.github.html.md#ge.github.get_review_comments)(repo, number)              | Fetch inline review comments on a PR (code-level comments).                                                                             |
+| [`get_reviews`](_autosummary/ge.github.html.md#ge.github.get_reviews)(repo, number)                      | Fetch PR reviews (approved, changes requested, etc.).                                                                                   |
+| [`get_timeline`](_autosummary/ge.github.html.md#ge.github.get_timeline)(repo, number)                     | Fetch the issue/PR timeline (events: referenced, closed, labeled, ...).                                                                 |
+| [`mentions_issue`](_autosummary/ge.github.html.md#ge.github.mentions_issue)(text, number)                   | Whether *text* references issue *number* as `#number` (GitHub search ignores the `#`, so a search for it also matches the bare number). |
 
 ### ge.github.find_related_commits(repo, issue_number, , limit=20)
 
@@ -680,6 +696,18 @@ This gives us cross-references, commits that mention the issue, etc.
 >>> # events = get_timeline('owner/repo', 42)
 ```
 
+### ge.github.mentions_issue(text, number)
+
+Whether *text* references issue *number* as `#number` (GitHub search
+ignores the `#`, so a search for it also matches the bare number).
+
+```pycon
+>>> mentions_issue('Fixes #12.', 12), mentions_issue('see #123', 12), mentions_issue('v12', 12)
+(True, False, False)
+>>> mentions_issue('closes owner/repo#12', 12)
+True
+```
+
 
 # _autosummary/ge.html.md
 
@@ -708,29 +736,33 @@ ctx = ge.prepare('https://github.com/owner/repo/issues/42')
 
 ### Functions
 
-| [`prepare`](_autosummary/ge.html.md#ge.prepare)(url_or_spec[, number, output_dir, ...])    | Prepare context from a GitHub URL or repo+number.                       |
-|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [`prepare_issue`](_autosummary/ge.html.md#ge.prepare_issue)(repo, number, \*[, output_dir, ...]) | Prepare full context for working on a GitHub issue.                     |
-| [`prepare_pr`](_autosummary/ge.html.md#ge.prepare_pr)(repo, number, \*[, output_dir, ...])    | Prepare full context for working on or reviewing a GitHub PR.           |
-| [`prepare_discussion`](_autosummary/ge.html.md#ge.prepare_discussion)(repo, number, \*[, ...])        | Prepare full context for a GitHub Discussion.                           |
-| [`analyze_issue`](_autosummary/ge.html.md#ge.analyze_issue)(repo, number)                        | Analyze an issue for staleness and current relevance.                   |
-| [`analyze_pr`](_autosummary/ge.html.md#ge.analyze_pr)(repo, number)                           | Analyze a PR for review context and merge readiness.                    |
-| [`get_issue`](_autosummary/ge.html.md#ge.get_issue)(repo, number)                            | Fetch a GitHub issue with body, labels, assignees, state, etc.          |
-| [`get_pr`](_autosummary/ge.html.md#ge.get_pr)(repo, number)                               | Fetch a GitHub pull request with body, diff stats, merge state, etc.    |
-| [`get_comments`](_autosummary/ge.html.md#ge.get_comments)(repo, number)                         | Fetch all comments on an issue or PR.                                   |
-| [`get_pr_diff`](_autosummary/ge.html.md#ge.get_pr_diff)(repo, number)                          | Fetch the raw diff of a PR.                                             |
-| [`get_discussion`](_autosummary/ge.html.md#ge.get_discussion)(repo, number)                       | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API). |
-| [`find_related_prs`](_autosummary/ge.html.md#ge.find_related_prs)(repo, issue_number)               | Find PRs that reference or close this issue.                            |
-| [`find_related_commits`](_autosummary/ge.html.md#ge.find_related_commits)(repo, issue_number, \*)       | Find recent commits that reference this issue number.                   |
-| [`process_all_media`](_autosummary/ge.html.md#ge.process_all_media)(markdown[, output_dir])          | Download all media and extract video frames.                            |
-| [`extract_video_frames`](_autosummary/ge.html.md#ge.extract_video_frames)(video_path, \*[, ...])        | Extract representative frames from a video file using ffmpeg.           |
-| [`describe_images`](_autosummary/ge.html.md#ge.describe_images)(\*image_paths[, prompt, ...])      | Use the Claude API to describe images, returning a text description.    |
-| [`copy_images_to_clipboard`](_autosummary/ge.html.md#ge.copy_images_to_clipboard)(\*image_paths[, ...])     | Create a montage of images and copy it to the macOS clipboard.          |
-| [`resolve_target`](_autosummary/ge.html.md#ge.resolve_target)(user_input, \*[, current_repo])     | Resolve flexible user input into a structured target for ge workflows.  |
-| [`install_skills`](_autosummary/ge.html.md#ge.install_skills)(\*[, target_dir])                   | Symlink ge skills into ~/.claude/skills/ for global discovery.          |
-| [`uninstall_skills`](_autosummary/ge.html.md#ge.uninstall_skills)(\*[, target_dir])                 | Remove ge skill symlinks from ~/.claude/skills/.                        |
-| [`github_memory`](_autosummary/ge.html.md#ge.github_memory)(repo, \*[, roadmap_issue, ...])      | Bundle the three stores into a "mall" dict keyed by name.               |
-| [`check_requirements`](_autosummary/ge.html.md#ge.check_requirements)(\*[, require_project_scope])    | Verify external prerequisites for the memory layer.                     |
+| [`issue_status`](_autosummary/ge.html.md#ge.issue_status)(repo, number)                         | The issue's status name, or `None` when it has none or statuses are not available for this repository.                                                                                                                                        |
+|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`set_issue_status`](_autosummary/ge.html.md#ge.set_issue_status)(repo, number, status, \*[, ...])  | Set an issue's status; GitHub closes or reopens it to match.                                                                                                                                                                                  |
+| [`issues_with_status`](_autosummary/ge.html.md#ge.issues_with_status)(status, \*[, repo, owner, ...]) | Yield issues in one status, across a repository or a whole owner.                                                                                                                                                                             |
+| [`planning_statuses`](_autosummary/ge.html.md#ge.planning_statuses)(owner)                           | The statuses available to an owner's repositories, in display order, as `[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the GraphQL node id); `None` when issue statuses are not available to that owner, or cannot be read. |
+| [`prepare`](_autosummary/ge.html.md#ge.prepare)(url_or_spec[, number, output_dir, ...])    | Prepare context from a GitHub URL or repo+number.                                                                                                                                                                                             |
+| [`prepare_issue`](_autosummary/ge.html.md#ge.prepare_issue)(repo, number, \*[, output_dir, ...]) | Prepare full context for working on a GitHub issue.                                                                                                                                                                                           |
+| [`prepare_pr`](_autosummary/ge.html.md#ge.prepare_pr)(repo, number, \*[, output_dir, ...])    | Prepare full context for working on or reviewing a GitHub PR.                                                                                                                                                                                 |
+| [`prepare_discussion`](_autosummary/ge.html.md#ge.prepare_discussion)(repo, number, \*[, ...])        | Prepare full context for a GitHub Discussion.                                                                                                                                                                                                 |
+| [`analyze_issue`](_autosummary/ge.html.md#ge.analyze_issue)(repo, number, \*[, ...])             | Analyze an issue for staleness and current relevance.                                                                                                                                                                                         |
+| [`analyze_pr`](_autosummary/ge.html.md#ge.analyze_pr)(repo, number)                           | Analyze a PR for review context and merge readiness.                                                                                                                                                                                          |
+| [`get_issue`](_autosummary/ge.html.md#ge.get_issue)(repo, number)                            | Fetch a GitHub issue with body, labels, assignees, state, etc.                                                                                                                                                                                |
+| [`get_pr`](_autosummary/ge.html.md#ge.get_pr)(repo, number)                               | Fetch a GitHub pull request with body, diff stats, merge state, etc.                                                                                                                                                                          |
+| [`get_comments`](_autosummary/ge.html.md#ge.get_comments)(repo, number)                         | Fetch all comments on an issue or PR.                                                                                                                                                                                                         |
+| [`get_pr_diff`](_autosummary/ge.html.md#ge.get_pr_diff)(repo, number)                          | Fetch the raw diff of a PR.                                                                                                                                                                                                                   |
+| [`get_discussion`](_autosummary/ge.html.md#ge.get_discussion)(repo, number)                       | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API).                                                                                                                                                                       |
+| [`find_related_prs`](_autosummary/ge.html.md#ge.find_related_prs)(repo, issue_number)               | Find PRs that reference or close this issue.                                                                                                                                                                                                  |
+| [`find_related_commits`](_autosummary/ge.html.md#ge.find_related_commits)(repo, issue_number, \*)       | Find recent commits that reference this issue number.                                                                                                                                                                                         |
+| [`process_all_media`](_autosummary/ge.html.md#ge.process_all_media)(markdown[, output_dir])          | Download all media and extract video frames.                                                                                                                                                                                                  |
+| [`extract_video_frames`](_autosummary/ge.html.md#ge.extract_video_frames)(video_path, \*[, ...])        | Extract representative frames from a video file using ffmpeg.                                                                                                                                                                                 |
+| [`describe_images`](_autosummary/ge.html.md#ge.describe_images)(\*image_paths[, prompt, ...])      | Use the Claude API to describe images, returning a text description.                                                                                                                                                                          |
+| [`copy_images_to_clipboard`](_autosummary/ge.html.md#ge.copy_images_to_clipboard)(\*image_paths[, ...])     | Create a montage of images and copy it to the macOS clipboard.                                                                                                                                                                                |
+| [`resolve_target`](_autosummary/ge.html.md#ge.resolve_target)(user_input, \*[, current_repo])     | Resolve flexible user input into a structured target for ge workflows.                                                                                                                                                                        |
+| [`install_skills`](_autosummary/ge.html.md#ge.install_skills)(\*[, target_dir])                   | Symlink ge skills into ~/.claude/skills/ for global discovery.                                                                                                                                                                                |
+| [`uninstall_skills`](_autosummary/ge.html.md#ge.uninstall_skills)(\*[, target_dir])                 | Remove ge skill symlinks from ~/.claude/skills/.                                                                                                                                                                                              |
+| [`github_memory`](_autosummary/ge.html.md#ge.github_memory)(repo, \*[, roadmap_issue, ...])      | Bundle the three stores into a "mall" dict keyed by name.                                                                                                                                                                                     |
+| [`check_requirements`](_autosummary/ge.html.md#ge.check_requirements)(\*[, require_project_scope])    | Verify external prerequisites for the memory layer.                                                                                                                                                                                           |
 
 ### Classes
 
@@ -863,13 +895,15 @@ Bases: [`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Enum`](h
 
 Triage classification for an issue.
 
-### ge.analyze_issue(repo, number)
+### ge.analyze_issue(repo, number, , stale_claim_days=14)
 
 Analyze an issue for staleness and current relevance.
 
 Returns a dict with:
 
 > - state: open/closed
+> - state_reason: completed / not_planned / duplicate / reopened, or None
+> - status: GitHub’s native status (Backlog, Todo, In progress, …), or None
 > - age_days: days since creation
 > - last_activity_days: days since last comment/event
 > - labels: list of label names
@@ -1055,6 +1089,44 @@ is printed if a symlink points elsewhere.
 * **Parameters:**
   **target_dir** – Destination directory.  Defaults to `~/.claude/skills/`.
 
+### ge.issue_status(repo, number)
+
+The issue’s status name, or `None` when it has none or statuses are
+not available for this repository.
+
+```pycon
+>>> # issue_status('owner/repo', 42)  # -> 'In progress'
+```
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+
+### ge.issues_with_status(status, , repo=None, owner=None, extra_query='', limit=100, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Yield issues in one status, across a repository or a whole owner.
+
+Each item is `{'repo', 'number', 'title', 'url', 'status', 'state',
+'updated_at', 'assignees', 'labels'}`, most recently updated first.
+`extra_query` adds search terms (`'label:bug'`, `'updated:<2026-11-01'`).
+At most `SEARCH_RESULT_CAP` results are reachable through search.
+
+```pycon
+>>> # list(issues_with_status('In progress', owner='octocat'))
+```
+
+* **Return type:**
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
+
+### ge.planning_statuses(owner)
+
+The statuses available to an owner’s repositories, in display order, as
+`[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the
+GraphQL node id); `None` when issue statuses are not available to that
+owner, or cannot be read.
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`list`](https://docs.python.org/3/builtins/stdtypes.html#list)]
+
 ### ge.prepare(url_or_spec, number=None, , output_dir=None, describe_media=True, \*\*kwargs)
 
 Prepare context from a GitHub URL or repo+number.
@@ -1163,6 +1235,25 @@ Returns a dict with:
 ('owner/repo', 42, 'repo_number')
 ```
 
+### ge.set_issue_status(repo, number, status, , duplicate_of=None, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Set an issue’s status; GitHub closes or reopens it to match.
+
+Returns `{'number', 'state', 'state_reason', 'status'}` as GitHub now
+reports them. `Duplicate` needs `duplicate_of` (the original issue’s
+number in the same repository). Raises `RuntimeError` when GitHub did not
+apply it (issue statuses unavailable in that repository).
+
+Setting an open status on a closed issue reopens it: check the state first
+if that is not what you want.
+
+```pycon
+>>> # set_issue_status('owner/repo', 42, 'In progress')
+```
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
 ### ge.uninstall_skills(, target_dir=None)
 
 Remove ge skill symlinks from ~/.claude/skills/.
@@ -1184,6 +1275,7 @@ left untouched.
 | [`media`](_autosummary/ge.media.html.md#module-ge.media)         | Media download and video frame extraction.                                              |
 | [`memory`](_autosummary/ge.memory.html.md#module-ge.memory)       | GitHub-backed durable memory for autonomous agent execution.                            |
 | [`run`](_autosummary/ge.run.html.md#module-ge.run)             | Autonomous-execution runner — Layer 3.                                                  |
+| [`status`](_autosummary/ge.status.html.md#module-ge.status)       | GitHub's native issue statuses: read, set and search them.                              |
 | [`util`](_autosummary/ge.util.html.md#module-ge.util)           | Internal utilities: gh CLI wrapper, subprocess helpers, URL parsing.                    |
 
 
@@ -1680,6 +1772,204 @@ The triage backlog lives in `tracking_repo#tracking_issue` (see
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 
+# _autosummary/ge.status.html.md
+
+# ge.status
+
+GitHub’s native issue statuses: read, set and search them.
+
+GitHub issues carry a *status* (public preview since 2026-11-23): one of a fixed
+set, each in a *category* that decides whether the issue is open or closed.
+
+| Status      | Category    | State   | State reason   |
+|-------------|-------------|---------|----------------|
+| Backlog     | backlog     | open    |                |
+| Todo        | planned     | open    |                |
+| In progress | started     | open    |                |
+| In review   | started     | open    |                |
+| Done        | completed   | closed  | completed      |
+| Not planned | not_planned | closed  | not_planned    |
+| Duplicate   | duplicate   | closed  | duplicate      |
+
+Setting a closed status closes the issue and setting an open one reopens it, so
+the status is the single field to write. GitHub also moves it on its own:
+assigning a person moves Backlog to Todo, linking a draft PR moves it to In
+progress, linking an open PR (or marking the draft ready) moves it to In review,
+closing moves it to Done, and **reopening resets it to Backlog**.
+
+Everything goes through the `gh` CLI (REST `status` field; GraphQL only for
+Duplicate, which needs the original issue). Where statuses are not available
+(the preview has not reached that repository, or the viewer cannot see them),
+[`issue_status()`](_autosummary/ge.status.html.md#ge.status.issue_status) returns `None` and callers fall back on open/closed.
+
+```pycon
+>>> normalize_status('in-progress')
+'In progress'
+>>> normalize_status('TODO')
+'Todo'
+>>> status_query('In progress')
+'status:"In progress"'
+```
+
+### Module Attributes
+
+| [`ISSUE_STATUSES`](_autosummary/ge.status.html.md#ge.status.ISSUE_STATUSES)    | GitHub's status names, in display order.                        |
+|--------------------------------------------------------------------|-----------------------------------------------------------------|
+| [`CLAIM_CATEGORY`](_autosummary/ge.status.html.md#ge.status.CLAIM_CATEGORY)    | someone is working on the issue.                                |
+| [`SEARCH_RESULT_CAP`](_autosummary/ge.status.html.md#ge.status.SEARCH_RESULT_CAP) | GitHub's search API serves at most this many results per query. |
+
+### Functions
+
+| [`is_claimed`](_autosummary/ge.status.html.md#ge.status.is_claimed)(issue)                                  | Whether the issue's status says someone is working on it (In progress or In review: category `started`).                                                                                                                                      |
+|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`issue_status`](_autosummary/ge.status.html.md#ge.status.issue_status)(repo, number)                         | The issue's status name, or `None` when it has none or statuses are not available for this repository.                                                                                                                                        |
+| [`issues_with_status`](_autosummary/ge.status.html.md#ge.status.issues_with_status)(status, \*[, repo, owner, ...]) | Yield issues in one status, across a repository or a whole owner.                                                                                                                                                                             |
+| [`normalize_status`](_autosummary/ge.status.html.md#ge.status.normalize_status)(name, \*[, statuses])             | Return the exact status name GitHub expects for a loosely spelled one.                                                                                                                                                                        |
+| [`planning_statuses`](_autosummary/ge.status.html.md#ge.status.planning_statuses)(owner)                           | The statuses available to an owner's repositories, in display order, as `[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the GraphQL node id); `None` when issue statuses are not available to that owner, or cannot be read. |
+| [`set_issue_status`](_autosummary/ge.status.html.md#ge.status.set_issue_status)(repo, number, status, \*[, ...])  | Set an issue's status; GitHub closes or reopens it to match.                                                                                                                                                                                  |
+| [`status_category`](_autosummary/ge.status.html.md#ge.status.status_category)(issue)                             | The status's category key in a REST or GraphQL issue payload, or `None`.                                                                                                                                                                      |
+| [`status_name`](_autosummary/ge.status.html.md#ge.status.status_name)(issue)                                 | The status name in a REST or GraphQL issue payload, or `None`.                                                                                                                                                                                |
+| [`status_query`](_autosummary/ge.status.html.md#ge.status.status_query)(status, \*[, statuses])               | The search qualifier for one status (exact name, quoted).                                                                                                                                                                                     |
+
+### ge.status.CLAIM_CATEGORY *= 'started'*
+
+someone is working on the issue.
+GitHub advises matching statuses by category key or id rather than by name.
+
+* **Type:**
+  The category of In progress and In review
+
+### ge.status.ISSUE_STATUSES *= ('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate')*
+
+GitHub’s status names, in display order. The set is fixed by GitHub during
+the preview; [`planning_statuses()`](_autosummary/ge.status.html.md#ge.status.planning_statuses) reads the live set for one owner.
+
+### ge.status.SEARCH_RESULT_CAP *= 1000*
+
+GitHub’s search API serves at most this many results per query.
+
+### ge.status.is_claimed(issue)
+
+Whether the issue’s status says someone is working on it (In progress or
+In review: category `started`).
+
+* **Return type:**
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
+
+### ge.status.issue_status(repo, number)
+
+The issue’s status name, or `None` when it has none or statuses are
+not available for this repository.
+
+```pycon
+>>> # issue_status('owner/repo', 42)  # -> 'In progress'
+```
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+
+### ge.status.issues_with_status(status, , repo=None, owner=None, extra_query='', limit=100, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Yield issues in one status, across a repository or a whole owner.
+
+Each item is `{'repo', 'number', 'title', 'url', 'status', 'state',
+'updated_at', 'assignees', 'labels'}`, most recently updated first.
+`extra_query` adds search terms (`'label:bug'`, `'updated:<2026-11-01'`).
+At most `SEARCH_RESULT_CAP` results are reachable through search.
+
+```pycon
+>>> # list(issues_with_status('In progress', owner='octocat'))
+```
+
+* **Return type:**
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
+
+### ge.status.normalize_status(name, , statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Return the exact status name GitHub expects for a loosely spelled one.
+
+Case, hyphens and underscores are ignored (`in-progress`, `NOT_PLANNED`).
+
+```pycon
+>>> normalize_status('not_planned')
+'Not planned'
+>>> normalize_status('doing')
+Traceback (most recent call last):
+  ...
+ValueError: Unknown issue status 'doing'. Valid: Backlog, Todo, In progress, In review, Done, Not planned, Duplicate
+```
+
+* **Return type:**
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+
+### ge.status.planning_statuses(owner)
+
+The statuses available to an owner’s repositories, in display order, as
+`[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the
+GraphQL node id); `None` when issue statuses are not available to that
+owner, or cannot be read.
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`list`](https://docs.python.org/3/builtins/stdtypes.html#list)]
+
+### ge.status.set_issue_status(repo, number, status, , duplicate_of=None, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Set an issue’s status; GitHub closes or reopens it to match.
+
+Returns `{'number', 'state', 'state_reason', 'status'}` as GitHub now
+reports them. `Duplicate` needs `duplicate_of` (the original issue’s
+number in the same repository). Raises `RuntimeError` when GitHub did not
+apply it (issue statuses unavailable in that repository).
+
+Setting an open status on a closed issue reopens it: check the state first
+if that is not what you want.
+
+```pycon
+>>> # set_issue_status('owner/repo', 42, 'In progress')
+```
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
+### ge.status.status_category(issue)
+
+The status’s category key in a REST or GraphQL issue payload, or `None`.
+
+```pycon
+>>> status_category({'status': {'name': 'In review', 'category': 'started', 'id': 8}})
+'started'
+>>> status_category({'status': {'name': 'Duplicate', 'category': {'key': 'duplicate'}}})
+'duplicate'
+```
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+
+### ge.status.status_name(issue)
+
+The status name in a REST or GraphQL issue payload, or `None`.
+
+```pycon
+>>> status_name({'status': {'name': 'Todo', 'category': 'planned', 'id': 3}})
+'Todo'
+>>> status_name({'state': 'open'}) is None
+True
+```
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+
+### ge.status.status_query(status, , statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+The search qualifier for one status (exact name, quoted).
+
+GitHub’s search accepts only the exact status name (any case) here, not the
+category key and not a comma list; `no:status` finds issues without one.
+
+* **Return type:**
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+
+
 # _autosummary/ge.util.html.md
 
 # ge.util
@@ -1852,7 +2142,7 @@ Replace media URLs in markdown with local file paths.
 
 # About this build
 
-This documentation was built on **2026-11-23 06:54 UTC** from commit <a href="https://github.com/addaix/ge/commit/a1822c5c77343c1e1290c52addf98c0dfad64b16"><code>a1822c5</code></a> on branch <code>main</code>, for **ge 0.1.24** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-11-26 12:50 UTC** from commit <a href="https://github.com/addaix/ge/commit/ce4175e359cd6775e0acb117eaa46a9223a10939"><code>ce4175e</code></a> on branch <code>main</code>, for **ge 0.1.25** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -1861,7 +2151,7 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                  |
 |---------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/addaix/ge/commit/a1822c5c77343c1e1290c52addf98c0dfad64b16"><code>a1822c5c77343c1e1290c52addf98c0dfad64b16</code></a> |
+| Commit              | <a href="https://github.com/addaix/ge/commit/ce4175e359cd6775e0acb117eaa46a9223a10939"><code>ce4175e359cd6775e0acb117eaa46a9223a10939</code></a> |
 | Branch              | <code>main</code>                                                                                                                                |
 | Tags at this commit | none                                                                                                                                             |
 | Working tree        | clean                                                                                                                                            |
@@ -1872,15 +2162,15 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>addaix/ge</code>                                                                     |
-| Run          | <a href="https://github.com/addaix/ge/actions/runs/45127135672">45127135672</a>            |
+| Run          | <a href="https://github.com/addaix/ge/actions/runs/45823136410">45823136410</a>            |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>a1822c5c77343c1e1290c52addf98c0dfad64b16</code> (in the history of the built commit) |
+| Event commit | <code>ce4175e359cd6775e0acb117eaa46a9223a10939</code> (in the history of the built commit) |
 
 ## Tools
 
 |          |         |
 |----------|---------|
-| epythet  | 0.2.23  |
+| epythet  | 0.2.25  |
 | Sphinx   | 9.1.1   |
 | docutils | 0.22.4  |
 | Python   | 3.12.16 |
@@ -1899,14 +2189,14 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/ge/0.1.24/">0.1.24</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/ge/0.1.25/">0.1.25</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/addaix/ge && cd ge
-git checkout a1822c5c77343c1e1290c52addf98c0dfad64b16
-pip install "epythet==0.2.23"
+git checkout ce4175e359cd6775e0acb117eaa46a9223a10939
+pip install "epythet==0.2.25"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
 

@@ -91,6 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ge.media.html">ge.media</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.memory.html">ge.memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.run.html">ge.run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ge.status.html">ge.status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.util.html">ge.util</a></li>
 </ul>
 </li>
@@ -126,10 +127,18 @@
 <p>Issue and PR analysis: staleness, relevance, and state assessment.</p>
 <p>Examines an issue or PR to determine if it’s still relevant, already fixed,
 or needs further investigation before work begins.</p>
+<p class="rubric">Module Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.analysis.STALE_CLAIM_DAYS" title="ge.analysis.STALE_CLAIM_DAYS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">STALE_CLAIM_DAYS</span></code></a></p></td>
+<td><p>Days without activity after which an In progress / In review issue is flagged.</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ge.analysis.analyze_issue" title="ge.analysis.analyze_issue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_issue</span></code></a>(repo, number)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.analysis.analyze_issue" title="ge.analysis.analyze_issue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_issue</span></code></a>(repo, number, *[, ...])</p></td>
 <td><p>Analyze an issue for staleness and current relevance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ge.analysis.analyze_pr" title="ge.analysis.analyze_pr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_pr</span></code></a>(repo, number)</p></td>
@@ -140,14 +149,21 @@ or needs further investigation before work begins.</p>
 </tr>
 </tbody>
 </table>
+<dl class="py data">
+<dt class="sig sig-object py" id="ge.analysis.STALE_CLAIM_DAYS">
+<span class="sig-prename descclassname"><span class="pre">ge.analysis.</span></span><span class="sig-name descname"><span class="pre">STALE_CLAIM_DAYS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></span><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.analysis.STALE_CLAIM_DAYS" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.analysis.STALE_CLAIM_DAYS'">¶</a></dt>
+<dd><p>Days without activity after which an In progress / In review issue is flagged.</p>
+</dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="ge.analysis.analyze_issue">
-<span class="sig-prename descclassname"><span class="pre">ge.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/analysis.html#analyze_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.analysis.analyze_issue" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.analysis.analyze_issue'">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ge.analysis.</span></span><span class="sig-name descname"><span class="pre">analyze_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">stale_claim_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/analysis.html#analyze_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.analysis.analyze_issue" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.analysis.analyze_issue'">¶</a></dt>
 <dd><p>Analyze an issue for staleness and current relevance.</p>
 <p>Returns a dict with:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>state: open/closed</p></li>
+<li><p>state_reason: completed / not_planned / duplicate / reopened, or None</p></li>
+<li><p>status: GitHub’s native status (Backlog, Todo, In progress, …), or None</p></li>
 <li><p>age_days: days since creation</p></li>
 <li><p>last_activity_days: days since last comment/event</p></li>
 <li><p>labels: list of label names</p></li>
@@ -184,6 +200,7 @@ or needs further investigation before work begins.</p>
 </div></div><aside class="hidden text-sm xl:block" id="right-sidebar">
 <div class="sticky top-16 -mt-10 max-h-[calc(100vh-5rem)] h-full overflow-y-auto pt-6 space-y-2"><p class="font-medium">On this page</p>
 <ul>
+<li><a :data-current="activeSection === '#ge.analysis.STALE_CLAIM_DAYS'" class="reference internal" href="#ge.analysis.STALE_CLAIM_DAYS"><code class="docutils literal notranslate"><span class="pre">STALE_CLAIM_DAYS</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.analysis.analyze_issue'" class="reference internal" href="#ge.analysis.analyze_issue"><code class="docutils literal notranslate"><span class="pre">analyze_issue()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.analysis.analyze_pr'" class="reference internal" href="#ge.analysis.analyze_pr"><code class="docutils literal notranslate"><span class="pre">analyze_pr()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.analysis.check_referenced_files'" class="reference internal" href="#ge.analysis.check_referenced_files"><code class="docutils literal notranslate"><span class="pre">check_referenced_files()</span></code></a></li>
@@ -200,7 +217,7 @@ or needs further investigation before work begins.</p>
 </div>
 </footer>
 </div>
-<script src="../_static/documentation_options.js?v=ebdbb45b"></script>
+<script src="../_static/documentation_options.js?v=4fa33042"></script>
 <script src="../_static/doctools.js?v=fd6eb6e6"></script>
 <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

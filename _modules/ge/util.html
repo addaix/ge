@@ -121,6 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ge.media.html">ge.media</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ge.memory.html">ge.memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ge.run.html">ge.run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ge.status.html">ge.status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../_autosummary/ge.util.html">ge.util</a></li>
 </ul>
 </li>
@@ -224,9 +225,9 @@
 </span><span id="line-48">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"gh_api: pass params or body, not both"</span><span class="p">)</span>
 </span><span id="line-49">    <span class="n">_check_gh</span><span class="p">()</span>
 </span><span id="line-50">    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"gh"</span><span class="p">,</span> <span class="s2">"api"</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">]</span>
-</span><span id="line-51">    <span class="k">if</span> <span class="p">(</span>
-</span><span id="line-52">        <span class="n">method</span> <span class="o">!=</span> <span class="s2">"GET"</span> <span class="ow">or</span> <span class="n">body</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-</span><span id="line-53">    <span class="p">):</span>  <span class="c1"># gh would turn a GET with input into a POST</span>
+</span><span id="line-51">    <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">"GET"</span> <span class="ow">or</span> <span class="n">body</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">params</span><span class="p">:</span>
+</span><span id="line-52">        <span class="c1"># gh turns a request with fields or input into a POST unless the method</span>
+</span><span id="line-53">        <span class="c1"># is explicit; with -X GET it sends the fields as the query string.</span>
 </span><span id="line-54">        <span class="n">cmd</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">"-X"</span><span class="p">,</span> <span class="n">method</span><span class="p">])</span>
 </span><span id="line-55">    <span class="k">if</span> <span class="n">paginate</span><span class="p">:</span>
 </span><span id="line-56">        <span class="n">cmd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"--paginate"</span><span class="p">)</span>
@@ -583,7 +584,7 @@
 </footer>
     </div>
     
-    <script src="../../_static/documentation_options.js?v=ebdbb45b"></script>
+    <script src="../../_static/documentation_options.js?v=4fa33042"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

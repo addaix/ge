@@ -91,6 +91,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ge.media.html">ge.media</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.memory.html">ge.memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.run.html">ge.run</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ge.status.html">ge.status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ge.util.html">ge.util</a></li>
 </ul>
 </li>
@@ -142,6 +143,18 @@ into a structured document the agent can consume.</p>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.issue_status" title="ge.issue_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issue_status</span></code></a>(repo, number)</p></td>
+<td><p>The issue's status name, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when it has none or statuses are not available for this repository.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ge.set_issue_status" title="ge.set_issue_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_issue_status</span></code></a>(repo, number, status, *[, ...])</p></td>
+<td><p>Set an issue's status; GitHub closes or reopens it to match.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.issues_with_status" title="ge.issues_with_status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">issues_with_status</span></code></a>(status, *[, repo, owner, ...])</p></td>
+<td><p>Yield issues in one status, across a repository or a whole owner.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ge.planning_statuses" title="ge.planning_statuses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">planning_statuses</span></code></a>(owner)</p></td>
+<td><p>The statuses available to an owner's repositories, in display order, as <code class="docutils literal notranslate"><span class="pre">[{'id',</span> <span class="pre">'name',</span> <span class="pre">'category',</span> <span class="pre">'state',</span> <span class="pre">'state_reason'}]</span></code> (<code class="docutils literal notranslate"><span class="pre">id</span></code> is the GraphQL node id); <code class="docutils literal notranslate"><span class="pre">None</span></code> when issue statuses are not available to that owner, or cannot be read.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ge.prepare" title="ge.prepare"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare</span></code></a>(url_or_spec[, number, output_dir, ...])</p></td>
 <td><p>Prepare context from a GitHub URL or repo+number.</p></td>
 </tr>
@@ -154,7 +167,7 @@ into a structured document the agent can consume.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#ge.prepare_discussion" title="ge.prepare_discussion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_discussion</span></code></a>(repo, number, *[, ...])</p></td>
 <td><p>Prepare full context for a GitHub Discussion.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ge.analyze_issue" title="ge.analyze_issue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_issue</span></code></a>(repo, number)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ge.analyze_issue" title="ge.analyze_issue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_issue</span></code></a>(repo, number, *[, ...])</p></td>
 <td><p>Analyze an issue for staleness and current relevance.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ge.analyze_pr" title="ge.analyze_pr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">analyze_pr</span></code></a>(repo, number)</p></td>
@@ -373,12 +386,14 @@ I/O methods; the public interface stays the same.</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="ge.analyze_issue">
-<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">analyze_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/analysis.html#analyze_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.analyze_issue" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.analyze_issue'">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">analyze_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">stale_claim_days</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/analysis.html#analyze_issue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.analyze_issue" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.analyze_issue'">¶</a></dt>
 <dd><p>Analyze an issue for staleness and current relevance.</p>
 <p>Returns a dict with:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>state: open/closed</p></li>
+<li><p>state_reason: completed / not_planned / duplicate / reopened, or None</p></li>
+<li><p>status: GitHub’s native status (Backlog, Todo, In progress, …), or None</p></li>
 <li><p>age_days: days since creation</p></li>
 <li><p>last_activity_days: days since last comment/event</p></li>
 <li><p>labels: list of label names</p></li>
@@ -578,6 +593,50 @@ is printed if a symlink points elsewhere.</p>
 </dl>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="ge.issue_status">
+<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">issue_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/status.html#issue_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.issue_status" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.issue_status'">¶</a></dt>
+<dd><p>The issue’s status name, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when it has none or statuses are
+not available for this repository.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># issue_status('owner/repo', 42)  # -&gt; 'In progress'</span>
+</span></code></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="ge.issues_with_status">
+<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">issues_with_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">repo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statuses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('Backlog',</span> <span class="pre">'Todo',</span> <span class="pre">'In</span> <span class="pre">progress',</span> <span class="pre">'In</span> <span class="pre">review',</span> <span class="pre">'Done',</span> <span class="pre">'Not</span> <span class="pre">planned',</span> <span class="pre">'Duplicate')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/status.html#issues_with_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.issues_with_status" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.issues_with_status'">¶</a></dt>
+<dd><p>Yield issues in one status, across a repository or a whole owner.</p>
+<p>Each item is <code class="docutils literal notranslate"><span class="pre">{'repo',</span> <span class="pre">'number',</span> <span class="pre">'title',</span> <span class="pre">'url',</span> <span class="pre">'status',</span> <span class="pre">'state',</span>
+<span class="pre">'updated_at',</span> <span class="pre">'assignees',</span> <span class="pre">'labels'}</span></code>, most recently updated first.
+<code class="docutils literal notranslate"><span class="pre">extra_query</span></code> adds search terms (<code class="docutils literal notranslate"><span class="pre">'label:bug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'updated:&lt;2026-11-01'</span></code>).
+At most <code class="docutils literal notranslate"><span class="pre">SEARCH_RESULT_CAP</span></code> results are reachable through search.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># list(issues_with_status('In progress', owner='octocat'))</span>
+</span></code></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="ge.planning_statuses">
+<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">planning_statuses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">owner</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/status.html#planning_statuses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.planning_statuses" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.planning_statuses'">¶</a></dt>
+<dd><p>The statuses available to an owner’s repositories, in display order, as
+<code class="docutils literal notranslate"><span class="pre">[{'id',</span> <span class="pre">'name',</span> <span class="pre">'category',</span> <span class="pre">'state',</span> <span class="pre">'state_reason'}]</span></code> (<code class="docutils literal notranslate"><span class="pre">id</span></code> is the
+GraphQL node id); <code class="docutils literal notranslate"><span class="pre">None</span></code> when issue statuses are not available to that
+owner, or cannot be read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="ge.prepare">
 <span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url_or_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">describe_media</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge.html#prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.prepare" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.prepare'">¶</a></dt>
 <dd><p>Prepare context from a GitHub URL or repo+number.</p>
@@ -686,6 +745,25 @@ image pasting.</p>
 </div>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="ge.set_issue_status">
+<span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">set_issue_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">repo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">duplicate_of</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statuses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('Backlog',</span> <span class="pre">'Todo',</span> <span class="pre">'In</span> <span class="pre">progress',</span> <span class="pre">'In</span> <span class="pre">review',</span> <span class="pre">'Done',</span> <span class="pre">'Not</span> <span class="pre">planned',</span> <span class="pre">'Duplicate')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge/status.html#set_issue_status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.set_issue_status" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.set_issue_status'">¶</a></dt>
+<dd><p>Set an issue’s status; GitHub closes or reopens it to match.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">{'number',</span> <span class="pre">'state',</span> <span class="pre">'state_reason',</span> <span class="pre">'status'}</span></code> as GitHub now
+reports them. <code class="docutils literal notranslate"><span class="pre">Duplicate</span></code> needs <code class="docutils literal notranslate"><span class="pre">duplicate_of</span></code> (the original issue’s
+number in the same repository). Raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> when GitHub did not
+apply it (issue statuses unavailable in that repository).</p>
+<p>Setting an open status on a closed issue reopens it: check the state first
+if that is not what you want.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><code><span id="line-1"><span class="gp">&gt;&gt;&gt; </span><span class="c1"># set_issue_status('owner/repo', 42, 'In progress')</span>
+</span></code></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" rel="nofollow noopener" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code><svg fill="currentColor" height="1em" stroke="none" viewbox="0 96 960 960" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M188 868q-11-11-11-28t11-28l436-436H400q-17 0-28.5-11.5T360 336q0-17 11.5-28.5T400 296h320q17 0 28.5 11.5T760 336v320q0 17-11.5 28.5T720 696q-17 0-28.5-11.5T680 656V432L244 868q-11 11-28 11t-28-11Z"></path></svg></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="ge.uninstall_skills">
 <span class="sig-prename descclassname"><span class="pre">ge.</span></span><span class="sig-name descname"><span class="pre">uninstall_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ge.html#uninstall_skills"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a @click.prevent="window.navigator.clipboard.writeText($el.href); $el.setAttribute('data-tooltip', 'Copied!'); setTimeout(() =&gt; $el.setAttribute('data-tooltip', 'Copy link to this element'), 2000)" aria-label="Copy link to this element" class="headerlink" data-tooltip="Copy link to this element" href="#ge.uninstall_skills" x-intersect.margin.0%.0%.-70%.0%="activeSection = '#ge.uninstall_skills'">¶</a></dt>
 <dd><p>Remove ge skill symlinks from ~/.claude/skills/.</p>
@@ -722,7 +800,10 @@ left untouched.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="ge.run.html#module-ge.run" title="ge.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a></p></td>
 <td><p>Autonomous-execution runner — Layer 3.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="ge.util.html#module-ge.util" title="ge.util"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="ge.status.html#module-ge.status" title="ge.status"><code class="xref py py-obj docutils literal notranslate"><span class="pre">status</span></code></a></p></td>
+<td><p>GitHub's native issue statuses: read, set and search them.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ge.util.html#module-ge.util" title="ge.util"><code class="xref py py-obj docutils literal notranslate"><span class="pre">util</span></code></a></p></td>
 <td><p>Internal utilities: gh CLI wrapper, subprocess helpers, URL parsing.</p></td>
 </tr>
 </tbody>
@@ -762,12 +843,16 @@ left untouched.</p>
 <li><a :data-current="activeSection === '#ge.get_pr_diff'" class="reference internal" href="#ge.get_pr_diff"><code class="docutils literal notranslate"><span class="pre">get_pr_diff()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.github_memory'" class="reference internal" href="#ge.github_memory"><code class="docutils literal notranslate"><span class="pre">github_memory()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.install_skills'" class="reference internal" href="#ge.install_skills"><code class="docutils literal notranslate"><span class="pre">install_skills()</span></code></a></li>
+<li><a :data-current="activeSection === '#ge.issue_status'" class="reference internal" href="#ge.issue_status"><code class="docutils literal notranslate"><span class="pre">issue_status()</span></code></a></li>
+<li><a :data-current="activeSection === '#ge.issues_with_status'" class="reference internal" href="#ge.issues_with_status"><code class="docutils literal notranslate"><span class="pre">issues_with_status()</span></code></a></li>
+<li><a :data-current="activeSection === '#ge.planning_statuses'" class="reference internal" href="#ge.planning_statuses"><code class="docutils literal notranslate"><span class="pre">planning_statuses()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.prepare'" class="reference internal" href="#ge.prepare"><code class="docutils literal notranslate"><span class="pre">prepare()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.prepare_discussion'" class="reference internal" href="#ge.prepare_discussion"><code class="docutils literal notranslate"><span class="pre">prepare_discussion()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.prepare_issue'" class="reference internal" href="#ge.prepare_issue"><code class="docutils literal notranslate"><span class="pre">prepare_issue()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.prepare_pr'" class="reference internal" href="#ge.prepare_pr"><code class="docutils literal notranslate"><span class="pre">prepare_pr()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.process_all_media'" class="reference internal" href="#ge.process_all_media"><code class="docutils literal notranslate"><span class="pre">process_all_media()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.resolve_target'" class="reference internal" href="#ge.resolve_target"><code class="docutils literal notranslate"><span class="pre">resolve_target()</span></code></a></li>
+<li><a :data-current="activeSection === '#ge.set_issue_status'" class="reference internal" href="#ge.set_issue_status"><code class="docutils literal notranslate"><span class="pre">set_issue_status()</span></code></a></li>
 <li><a :data-current="activeSection === '#ge.uninstall_skills'" class="reference internal" href="#ge.uninstall_skills"><code class="docutils literal notranslate"><span class="pre">uninstall_skills()</span></code></a></li>
 </ul>
 </div>
@@ -782,7 +867,7 @@ left untouched.</p>
 </div>
 </footer>
 </div>
-<script src="../_static/documentation_options.js?v=ebdbb45b"></script>
+<script src="../_static/documentation_options.js?v=4fa33042"></script>
 <script src="../_static/doctools.js?v=fd6eb6e6"></script>
 <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

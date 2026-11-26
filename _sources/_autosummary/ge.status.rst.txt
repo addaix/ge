@@ -1,0 +1,28 @@
+ge.status
+=========
+
+.. automodule:: ge.status
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      ISSUE_STATUSES
+      CLAIM_CATEGORY
+      SEARCH_RESULT_CAP
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      is_claimed
+      issue_status
+      issues_with_status
+      normalize_status
+      planning_statuses
+      set_issue_status
+      status_category
+      status_name
+      status_query
+   

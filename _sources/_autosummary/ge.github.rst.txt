@@ -22,4 +22,5 @@ ge.github
       get_review_comments
       get_reviews
       get_timeline
+      mentions_issue
    

@@ -23,29 +23,33 @@ ctx = ge.prepare('https://github.com/owner/repo/issues/42')
 
 ### Functions
 
-| [`prepare`](#ge.prepare)(url_or_spec[, number, output_dir, ...])    | Prepare context from a GitHub URL or repo+number.                       |
-|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [`prepare_issue`](#ge.prepare_issue)(repo, number, \*[, output_dir, ...]) | Prepare full context for working on a GitHub issue.                     |
-| [`prepare_pr`](#ge.prepare_pr)(repo, number, \*[, output_dir, ...])    | Prepare full context for working on or reviewing a GitHub PR.           |
-| [`prepare_discussion`](#ge.prepare_discussion)(repo, number, \*[, ...])        | Prepare full context for a GitHub Discussion.                           |
-| [`analyze_issue`](#ge.analyze_issue)(repo, number)                        | Analyze an issue for staleness and current relevance.                   |
-| [`analyze_pr`](#ge.analyze_pr)(repo, number)                           | Analyze a PR for review context and merge readiness.                    |
-| [`get_issue`](#ge.get_issue)(repo, number)                            | Fetch a GitHub issue with body, labels, assignees, state, etc.          |
-| [`get_pr`](#ge.get_pr)(repo, number)                               | Fetch a GitHub pull request with body, diff stats, merge state, etc.    |
-| [`get_comments`](#ge.get_comments)(repo, number)                         | Fetch all comments on an issue or PR.                                   |
-| [`get_pr_diff`](#ge.get_pr_diff)(repo, number)                          | Fetch the raw diff of a PR.                                             |
-| [`get_discussion`](#ge.get_discussion)(repo, number)                       | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API). |
-| [`find_related_prs`](#ge.find_related_prs)(repo, issue_number)               | Find PRs that reference or close this issue.                            |
-| [`find_related_commits`](#ge.find_related_commits)(repo, issue_number, \*)       | Find recent commits that reference this issue number.                   |
-| [`process_all_media`](#ge.process_all_media)(markdown[, output_dir])          | Download all media and extract video frames.                            |
-| [`extract_video_frames`](#ge.extract_video_frames)(video_path, \*[, ...])        | Extract representative frames from a video file using ffmpeg.           |
-| [`describe_images`](#ge.describe_images)(\*image_paths[, prompt, ...])      | Use the Claude API to describe images, returning a text description.    |
-| [`copy_images_to_clipboard`](#ge.copy_images_to_clipboard)(\*image_paths[, ...])     | Create a montage of images and copy it to the macOS clipboard.          |
-| [`resolve_target`](#ge.resolve_target)(user_input, \*[, current_repo])     | Resolve flexible user input into a structured target for ge workflows.  |
-| [`install_skills`](#ge.install_skills)(\*[, target_dir])                   | Symlink ge skills into ~/.claude/skills/ for global discovery.          |
-| [`uninstall_skills`](#ge.uninstall_skills)(\*[, target_dir])                 | Remove ge skill symlinks from ~/.claude/skills/.                        |
-| [`github_memory`](#ge.github_memory)(repo, \*[, roadmap_issue, ...])      | Bundle the three stores into a "mall" dict keyed by name.               |
-| [`check_requirements`](#ge.check_requirements)(\*[, require_project_scope])    | Verify external prerequisites for the memory layer.                     |
+| [`issue_status`](#ge.issue_status)(repo, number)                         | The issue's status name, or `None` when it has none or statuses are not available for this repository.                                                                                                                                        |
+|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`set_issue_status`](#ge.set_issue_status)(repo, number, status, \*[, ...])  | Set an issue's status; GitHub closes or reopens it to match.                                                                                                                                                                                  |
+| [`issues_with_status`](#ge.issues_with_status)(status, \*[, repo, owner, ...]) | Yield issues in one status, across a repository or a whole owner.                                                                                                                                                                             |
+| [`planning_statuses`](#ge.planning_statuses)(owner)                           | The statuses available to an owner's repositories, in display order, as `[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the GraphQL node id); `None` when issue statuses are not available to that owner, or cannot be read. |
+| [`prepare`](#ge.prepare)(url_or_spec[, number, output_dir, ...])    | Prepare context from a GitHub URL or repo+number.                                                                                                                                                                                             |
+| [`prepare_issue`](#ge.prepare_issue)(repo, number, \*[, output_dir, ...]) | Prepare full context for working on a GitHub issue.                                                                                                                                                                                           |
+| [`prepare_pr`](#ge.prepare_pr)(repo, number, \*[, output_dir, ...])    | Prepare full context for working on or reviewing a GitHub PR.                                                                                                                                                                                 |
+| [`prepare_discussion`](#ge.prepare_discussion)(repo, number, \*[, ...])        | Prepare full context for a GitHub Discussion.                                                                                                                                                                                                 |
+| [`analyze_issue`](#ge.analyze_issue)(repo, number, \*[, ...])             | Analyze an issue for staleness and current relevance.                                                                                                                                                                                         |
+| [`analyze_pr`](#ge.analyze_pr)(repo, number)                           | Analyze a PR for review context and merge readiness.                                                                                                                                                                                          |
+| [`get_issue`](#ge.get_issue)(repo, number)                            | Fetch a GitHub issue with body, labels, assignees, state, etc.                                                                                                                                                                                |
+| [`get_pr`](#ge.get_pr)(repo, number)                               | Fetch a GitHub pull request with body, diff stats, merge state, etc.                                                                                                                                                                          |
+| [`get_comments`](#ge.get_comments)(repo, number)                         | Fetch all comments on an issue or PR.                                                                                                                                                                                                         |
+| [`get_pr_diff`](#ge.get_pr_diff)(repo, number)                          | Fetch the raw diff of a PR.                                                                                                                                                                                                                   |
+| [`get_discussion`](#ge.get_discussion)(repo, number)                       | Fetch a GitHub Discussion via GraphQL (discussions aren't in REST API).                                                                                                                                                                       |
+| [`find_related_prs`](#ge.find_related_prs)(repo, issue_number)               | Find PRs that reference or close this issue.                                                                                                                                                                                                  |
+| [`find_related_commits`](#ge.find_related_commits)(repo, issue_number, \*)       | Find recent commits that reference this issue number.                                                                                                                                                                                         |
+| [`process_all_media`](#ge.process_all_media)(markdown[, output_dir])          | Download all media and extract video frames.                                                                                                                                                                                                  |
+| [`extract_video_frames`](#ge.extract_video_frames)(video_path, \*[, ...])        | Extract representative frames from a video file using ffmpeg.                                                                                                                                                                                 |
+| [`describe_images`](#ge.describe_images)(\*image_paths[, prompt, ...])      | Use the Claude API to describe images, returning a text description.                                                                                                                                                                          |
+| [`copy_images_to_clipboard`](#ge.copy_images_to_clipboard)(\*image_paths[, ...])     | Create a montage of images and copy it to the macOS clipboard.                                                                                                                                                                                |
+| [`resolve_target`](#ge.resolve_target)(user_input, \*[, current_repo])     | Resolve flexible user input into a structured target for ge workflows.                                                                                                                                                                        |
+| [`install_skills`](#ge.install_skills)(\*[, target_dir])                   | Symlink ge skills into ~/.claude/skills/ for global discovery.                                                                                                                                                                                |
+| [`uninstall_skills`](#ge.uninstall_skills)(\*[, target_dir])                 | Remove ge skill symlinks from ~/.claude/skills/.                                                                                                                                                                                              |
+| [`github_memory`](#ge.github_memory)(repo, \*[, roadmap_issue, ...])      | Bundle the three stores into a "mall" dict keyed by name.                                                                                                                                                                                     |
+| [`check_requirements`](#ge.check_requirements)(\*[, require_project_scope])    | Verify external prerequisites for the memory layer.                                                                                                                                                                                           |
 
 ### Classes
 
@@ -178,13 +182,15 @@ Bases: [`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Enum`](h
 
 Triage classification for an issue.
 
-### ge.analyze_issue(repo, number)
+### ge.analyze_issue(repo, number, , stale_claim_days=14)
 
 Analyze an issue for staleness and current relevance.
 
 Returns a dict with:
 
 > - state: open/closed
+> - state_reason: completed / not_planned / duplicate / reopened, or None
+> - status: GitHub’s native status (Backlog, Todo, In progress, …), or None
 > - age_days: days since creation
 > - last_activity_days: days since last comment/event
 > - labels: list of label names
@@ -370,6 +376,44 @@ is printed if a symlink points elsewhere.
 * **Parameters:**
   **target_dir** – Destination directory.  Defaults to `~/.claude/skills/`.
 
+### ge.issue_status(repo, number)
+
+The issue’s status name, or `None` when it has none or statuses are
+not available for this repository.
+
+```pycon
+>>> # issue_status('owner/repo', 42)  # -> 'In progress'
+```
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+
+### ge.issues_with_status(status, , repo=None, owner=None, extra_query='', limit=100, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Yield issues in one status, across a repository or a whole owner.
+
+Each item is `{'repo', 'number', 'title', 'url', 'status', 'state',
+'updated_at', 'assignees', 'labels'}`, most recently updated first.
+`extra_query` adds search terms (`'label:bug'`, `'updated:<2026-11-01'`).
+At most `SEARCH_RESULT_CAP` results are reachable through search.
+
+```pycon
+>>> # list(issues_with_status('In progress', owner='octocat'))
+```
+
+* **Return type:**
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
+
+### ge.planning_statuses(owner)
+
+The statuses available to an owner’s repositories, in display order, as
+`[{'id', 'name', 'category', 'state', 'state_reason'}]` (`id` is the
+GraphQL node id); `None` when issue statuses are not available to that
+owner, or cannot be read.
+
+* **Return type:**
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`list`](https://docs.python.org/3/builtins/stdtypes.html#list)]
+
 ### ge.prepare(url_or_spec, number=None, , output_dir=None, describe_media=True, \*\*kwargs)
 
 Prepare context from a GitHub URL or repo+number.
@@ -478,6 +522,25 @@ Returns a dict with:
 ('owner/repo', 42, 'repo_number')
 ```
 
+### ge.set_issue_status(repo, number, status, , duplicate_of=None, statuses=('Backlog', 'Todo', 'In progress', 'In review', 'Done', 'Not planned', 'Duplicate'))
+
+Set an issue’s status; GitHub closes or reopens it to match.
+
+Returns `{'number', 'state', 'state_reason', 'status'}` as GitHub now
+reports them. `Duplicate` needs `duplicate_of` (the original issue’s
+number in the same repository). Raises `RuntimeError` when GitHub did not
+apply it (issue statuses unavailable in that repository).
+
+Setting an open status on a closed issue reopens it: check the state first
+if that is not what you want.
+
+```pycon
+>>> # set_issue_status('owner/repo', 42, 'In progress')
+```
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
 ### ge.uninstall_skills(, target_dir=None)
 
 Remove ge skill symlinks from ~/.claude/skills/.
@@ -499,4 +562,5 @@ left untouched.
 | [`media`](ge.media.html.md#module-ge.media)         | Media download and video frame extraction.                                              |
 | [`memory`](ge.memory.html.md#module-ge.memory)       | GitHub-backed durable memory for autonomous agent execution.                            |
 | [`run`](ge.run.html.md#module-ge.run)             | Autonomous-execution runner — Layer 3.                                                  |
+| [`status`](ge.status.html.md#module-ge.status)       | GitHub's native issue statuses: read, set and search them.                              |
 | [`util`](ge.util.html.md#module-ge.util)           | Internal utilities: gh CLI wrapper, subprocess helpers, URL parsing.                    |
