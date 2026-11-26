@@ -169,7 +169,7 @@ Then read the relevant sections of those files.
 
 ### Step 6: Work on the issue
 
-Now you have full context. **Claim the issue first:** `ge set-status owner/repo 42 in-progress` (skip it if the status is None). Then create a branch, make changes, and submit a PR with `Closes #42`: GitHub moves the issue to In review when the PR is linked and to Done when it merges. If you stop without a PR, put it back: `ge set-status owner/repo 42 todo`. The rules (what each status means here, and what stays a label) are in the `github-memory` skill.
+Now you have full context. **Claim the issue first:** `ge set-status owner/repo 42 in-progress` (not on a closed issue: setting a status reopens it; if ge reports that statuses are unavailable in that repo, carry on without). Then create a branch, make changes, and submit a PR with `Closes #42`: GitHub moves the issue to In review when the PR is linked and to Done when it merges. If you stop without a PR, put it back: `ge set-status owner/repo 42 todo`. The rules (what each status means here, and what stays a label) are in the `github-memory` skill.
 
 ## Quick analysis shortcut
 

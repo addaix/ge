@@ -29,9 +29,10 @@ class TestNormalize:
         with pytest.raises(ValueError, match="Valid: Backlog, Todo"):
             st.normalize_status("blocked")
 
-    def test_open_and_closed_partition(self):
-        assert set(st.OPEN_STATUSES) | set(st.CLOSED_STATUSES) == set(st.ISSUE_STATUSES)
-        assert "In review" in st.OPEN_STATUSES and "Done" in st.CLOSED_STATUSES
+    def test_custom_status_set_is_a_seam(self):
+        assert st.status_query("testing", statuses=("Testing",)) == 'status:"Testing"'
+        with pytest.raises(ValueError):
+            st.status_query("testing")
 
     def test_status_query_quotes_exact_name(self):
         assert st.status_query("in-progress") == 'status:"In progress"'
@@ -41,6 +42,12 @@ class TestRead:
     def test_status_name_rest_payload(self):
         issue = {"status": {"category": "started", "id": 4, "name": "In progress"}}
         assert st.status_name(issue) == "In progress"
+
+    def test_claim_is_by_category(self):
+        assert st.is_claimed({"status": {"name": "In review", "category": "started"}})
+        assert st.is_claimed({"status": {"name": "Renamed", "category": {"key": "started"}}})
+        assert not st.is_claimed({"status": {"name": "Todo", "category": "planned"}})
+        assert not st.is_claimed({"status": None})
 
     def test_status_name_absent_or_null(self):
         assert st.status_name({"state": "open"}) is None
@@ -72,6 +79,12 @@ class TestSet:
             "status": "In progress",
         }
 
+    def test_not_applied_raises(self):
+        reply = {"number": 3, "state": "open", "state_reason": None, "status": None}
+        with patch("ge.status.gh_api", return_value=reply):
+            with pytest.raises(RuntimeError, match="did not set"):
+                st.set_issue_status("o/r", 3, "Todo")
+
     def test_duplicate_needs_original(self):
         with pytest.raises(ValueError, match="duplicate_of"):
             st.set_issue_status("o/r", 3, "Duplicate")
@@ -87,7 +100,10 @@ class TestSet:
                     "issue": {"id": "I_3"},
                     "original": {"id": "I_2"},
                     "planningStatuses": {
-                        "nodes": [{"id": "S_B", "name": "Backlog"}, {"id": "S_D", "name": "Duplicate"}]
+                        "nodes": [
+                            {"id": "S_B", "name": "Backlog", "category": {"key": "backlog"}},
+                            {"id": "S_D", "name": "Dupe", "category": {"key": "duplicate"}},
+                        ]
                     },
                 }
             }
@@ -117,6 +133,10 @@ class TestSet:
 
 
 class TestPlanningStatuses:
+    def test_unreadable_is_none(self):
+        with patch("ge.status.gh_api", side_effect=RuntimeError("gh api graphql failed")):
+            assert st.planning_statuses("o") is None
+
     def test_not_available(self):
         reply = {"data": {"repositoryOwner": {"planningStatuses": None}}}
         with patch("ge.status.gh_api", return_value=reply):
@@ -124,13 +144,14 @@ class TestPlanningStatuses:
 
     def test_available(self):
         node = {
+            "id": "S_F",
             "name": "Done",
             "category": {"key": "completed", "state": "CLOSED", "stateReason": "COMPLETED"},
         }
         reply = {"data": {"repositoryOwner": {"planningStatuses": {"nodes": [node]}}}}
         with patch("ge.status.gh_api", return_value=reply):
             assert st.planning_statuses("o") == [
-                {"name": "Done", "category": "completed", "state": "closed", "state_reason": "completed"}
+                {"id": "S_F", "name": "Done", "category": "completed", "state": "closed", "state_reason": "completed"}
             ]
 
 
@@ -152,8 +173,9 @@ class TestSearch:
     def test_query_and_shape(self):
         with patch("ge.status.gh_api", return_value={"items": [_item(1)]}) as m:
             out = list(st.issues_with_status("in progress", owner="o", extra_query="label:bug"))
-        q = m.call_args.kwargs["params"]["q"]
-        assert q == 'user:o is:issue status:"In progress" label:bug'
+        params = m.call_args.kwargs["params"]
+        assert params["q"] == 'user:o is:issue status:"In progress" label:bug'
+        assert params["sort"] == "updated"
         assert out[0]["repo"] == "o/r" and out[0]["status"] == "In progress"
         assert out[0]["assignees"] == ["a"] and out[0]["labels"] == ["bug"]
 
@@ -162,6 +184,13 @@ class TestSearch:
         with patch("ge.status.gh_api", side_effect=pages):
             out = list(st.issues_with_status("Todo", repo="o/r", limit=2))
         assert [x["number"] for x in out] == [0, 1]
+
+    def test_stops_at_total_count_and_search_cap(self):
+        page = {"total_count": 2, "items": [_item(1), _item(2)]}
+        with patch("ge.status.gh_api", return_value=page) as m:
+            out = list(st.issues_with_status("Todo", repo="o/r", limit=5000))
+        assert len(out) == 2 and m.call_count == 1
+        assert m.call_args.kwargs["params"]["per_page"] == "100"
 
     def test_exactly_one_scope(self):
         with pytest.raises(ValueError):

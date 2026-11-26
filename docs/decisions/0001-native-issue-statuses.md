@@ -21,7 +21,7 @@ Agents using `ge` and the GitHub-memory conventions already track work with open
 2. **Before starting, read the status.** In progress or In review means someone has claimed it: ask, or pick another issue. A claim quiet for more than 14 days is flagged by `ge analyze-issue` as possibly stale.
 3. **Stopping without a PR, set it back to Todo.** A blocked agent that stays on the issue leaves In progress and says why in the decision log.
 4. **Labels keep what a status cannot say**: who the issue waits on (a human-chore label), why it is blocked (`blocked`, with issue dependencies as the source of truth), and what kind of work it is. **No progress labels** (`in-progress`, `wip`, `status:*`): the native status replaces them.
-5. **Best effort, never a dependency.** Where statuses are unavailable `ge.issue_status` returns `None`: skip the write and fall back on open/closed. Nothing may fail because a status could not be set, and no reader may treat a missing status as Backlog.
+5. **Best effort, never a dependency.** Issues filed before the preview have no status until one is set, and setting it works. Where statuses are unavailable, `ge.set_issue_status` raises ("did not set") and `ge.issue_status` returns `None`: carry on and fall back on open/closed. Nothing may fail because a status could not be set, and no reader may treat a missing status as Backlog.
 6. **No backfill, no Projects mirror.** Old issues keep no status until they are touched. Do not track the same progress in a Projects v2 Status field; if a same-owner Project uses matching option names, GitHub syncs them both ways.
 7. **Reopening resets to Backlog.** An agent reopening an issue to work on it sets In progress again.
 

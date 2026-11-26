@@ -50,8 +50,9 @@ ISSUE_STATUSES = (
 """GitHub's status names, in display order. The set is fixed by GitHub during
 the preview; :func:`planning_statuses` reads the live set for one owner."""
 
-OPEN_STATUSES = ISSUE_STATUSES[:4]
-CLOSED_STATUSES = ISSUE_STATUSES[4:]
+CLAIM_CATEGORY = "started"
+"""The category of In progress and In review: someone is working on the issue.
+GitHub advises matching statuses by category key or id rather than by name."""
 
 
 def _key(name: str) -> str:
@@ -82,13 +83,13 @@ def normalize_status(name: str, *, statuses=ISSUE_STATUSES) -> str:
         ) from None
 
 
-def status_query(status: str) -> str:
+def status_query(status: str, *, statuses=ISSUE_STATUSES) -> str:
     """The search qualifier for one status (exact name, quoted).
 
     GitHub's search accepts only the exact status name (any case) here, not the
     category key and not a comma list; ``no:status`` finds issues without one.
     """
-    return f'status:"{normalize_status(status)}"'
+    return f'status:"{normalize_status(status, statuses=statuses)}"'
 
 
 def issue_status(repo, number) -> Optional[str]:
@@ -100,6 +101,25 @@ def issue_status(repo, number) -> Optional[str]:
     owner, name = parse_repo_spec(repo)
     issue = gh_api(f"repos/{owner}/{name}/issues/{number}")
     return status_name(issue)
+
+
+def status_category(issue) -> Optional[str]:
+    """The status's category key in a REST or GraphQL issue payload, or ``None``.
+
+    >>> status_category({'status': {'name': 'In review', 'category': 'started', 'id': 8}})
+    'started'
+    >>> status_category({'status': {'name': 'Duplicate', 'category': {'key': 'duplicate'}}})
+    'duplicate'
+    """
+    status = (issue or {}).get("status")
+    category = status.get("category") if isinstance(status, dict) else None
+    return category.get("key") if isinstance(category, dict) else category
+
+
+def is_claimed(issue) -> bool:
+    """Whether the issue's status says someone is working on it (In progress or
+    In review: category ``started``)."""
+    return status_category(issue) == CLAIM_CATEGORY
 
 
 def status_name(issue) -> Optional[str]:
@@ -114,17 +134,23 @@ def status_name(issue) -> Optional[str]:
     return status.get("name") if isinstance(status, dict) else None
 
 
-def set_issue_status(repo, number, status, *, duplicate_of=None) -> dict:
+def set_issue_status(
+    repo, number, status, *, duplicate_of=None, statuses=ISSUE_STATUSES
+) -> dict:
     """Set an issue's status; GitHub closes or reopens it to match.
 
     Returns ``{'number', 'state', 'state_reason', 'status'}`` as GitHub now
     reports them. ``Duplicate`` needs ``duplicate_of`` (the original issue's
-    number in the same repository).
+    number in the same repository). Raises ``RuntimeError`` when GitHub did not
+    apply it (issue statuses unavailable in that repository).
+
+    Setting an open status on a closed issue reopens it: check the state first
+    if that is not what you want.
 
     >>> # set_issue_status('owner/repo', 42, 'In progress')
     """
     owner, name = parse_repo_spec(repo)
-    status = normalize_status(status)
+    status = normalize_status(status, statuses=statuses)
     if status == "Duplicate":
         if duplicate_of is None:
             raise ValueError(
@@ -136,7 +162,13 @@ def set_issue_status(repo, number, status, *, duplicate_of=None) -> dict:
     issue = gh_api(
         f"repos/{owner}/{name}/issues/{number}", method="PATCH", body={"status": status}
     )
-    return _summary(issue)
+    summary = _summary(issue)
+    if summary["status"] != status:
+        raise RuntimeError(
+            f"GitHub did not set {owner}/{name}#{number} to {status!r} "
+            f"(it reports {summary['status']!r}): issue statuses may be unavailable there"
+        )
+    return summary
 
 
 def _summary(issue) -> dict:
@@ -153,7 +185,7 @@ query($owner: String!, $name: String!, $number: Int!, $original: Int!) {
   repository(owner: $owner, name: $name) {
     issue(number: $number) { id }
     original: issue(number: $original) { id }
-    planningStatuses(first: 20) { nodes { id name } }
+    planningStatuses(first: 20) { nodes { id name category { key } } }
   }
 }
 """
@@ -185,7 +217,9 @@ def _set_duplicate(owner, name, number, original) -> dict:
         original=int(original),
     )["repository"]
     statuses = (repo.get("planningStatuses") or {}).get("nodes") or []
-    status_id = next((s["id"] for s in statuses if s["name"] == "Duplicate"), None)
+    status_id = next(
+        (s["id"] for s in statuses if s["category"]["key"] == "duplicate"), None
+    )
     if status_id is None:
         raise RuntimeError(f"Issue statuses are not available in {owner}/{name}")
     issue = _graphql(
@@ -204,8 +238,9 @@ def _set_duplicate(owner, name, number, original) -> dict:
 
 def planning_statuses(owner) -> Optional[list]:
     """The statuses available to an owner's repositories, in display order, as
-    ``[{'name', 'category', 'state', 'state_reason'}]``; ``None`` when issue
-    statuses are not available to that owner."""
+    ``[{'id', 'name', 'category', 'state', 'state_reason'}]`` (``id`` is the
+    GraphQL node id); ``None`` when issue statuses are not available to that
+    owner, or cannot be read."""
     query = """
     query($owner: String!) {
       repositoryOwner(login: $owner) {
@@ -214,15 +249,19 @@ def planning_statuses(owner) -> Optional[list]:
       }
     }
     fragment S on PlanningStatusConnection {
-      nodes { name category { key state stateReason } }
+      nodes { id name category { key state stateReason } }
     }
     """
-    owner_data = _graphql(query, owner=owner)["repositoryOwner"] or {}
+    try:
+        owner_data = _graphql(query, owner=owner)["repositoryOwner"] or {}
+    except RuntimeError:
+        return None
     statuses = owner_data.get("planningStatuses")
     if statuses is None:
         return None
     return [
         {
+            "id": n["id"],
             "name": n["name"],
             "category": n["category"]["key"],
             "state": n["category"]["state"].lower(),
@@ -232,28 +271,50 @@ def planning_statuses(owner) -> Optional[list]:
     ]
 
 
+SEARCH_RESULT_CAP = 1000
+"""GitHub's search API serves at most this many results per query."""
+
+
 def issues_with_status(
-    status, *, repo=None, owner=None, extra_query="", limit=100
+    status,
+    *,
+    repo=None,
+    owner=None,
+    extra_query="",
+    limit=100,
+    statuses=ISSUE_STATUSES,
 ) -> Iterator[dict]:
     """Yield issues in one status, across a repository or a whole owner.
 
     Each item is ``{'repo', 'number', 'title', 'url', 'status', 'state',
-    'updated_at', 'assignees', 'labels'}``. ``extra_query`` adds search terms
-    (``'label:manual-task'``, ``'updated:<2026-11-01'``).
+    'updated_at', 'assignees', 'labels'}``, most recently updated first.
+    ``extra_query`` adds search terms (``'label:bug'``, ``'updated:<2026-11-01'``).
+    At most ``SEARCH_RESULT_CAP`` results are reachable through search.
 
-    >>> # list(issues_with_status('In progress', owner='thorwhalen'))
+    >>> # list(issues_with_status('In progress', owner='octocat'))
     """
     if (repo is None) == (owner is None):
         raise ValueError("Pass exactly one of repo= or owner=")
     scope = f"repo:{'/'.join(parse_repo_spec(repo))}" if repo else f"user:{owner}"
-    q = " ".join(x for x in (scope, "is:issue", status_query(status), extra_query) if x)
-    per_page = min(100, limit)
+    q = " ".join(
+        x
+        for x in (scope, "is:issue", status_query(status, statuses=statuses), extra_query)
+        if x
+    )
+    limit = min(limit, SEARCH_RESULT_CAP)
+    per_page = max(1, min(100, limit))
     seen = 0
     page = 1
     while seen < limit:
         out = gh_api(
             "search/issues",
-            params={"q": q, "per_page": str(per_page), "page": str(page)},
+            params={
+                "q": q,
+                "sort": "updated",
+                "order": "desc",
+                "per_page": str(per_page),
+                "page": str(page),
+            },
         )
         items = out.get("items", [])
         for it in items:
@@ -271,6 +332,7 @@ def issues_with_status(
             seen += 1
             if seen >= limit:
                 return
-        if len(items) < per_page:
+        total = out.get("total_count")
+        if len(items) < per_page or (total is not None and seen >= total):
             return
         page += 1

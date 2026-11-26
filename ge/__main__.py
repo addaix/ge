@@ -302,7 +302,7 @@ def in_status(
     """List issues in one native status across a repo or a whole owner (JSON lines).
 
     Examples:
-        ge in-status "In progress" --owner thorwhalen
+        ge in-status "In progress" --owner octocat
         ge in-status todo --repo owner/repo --query 'label:bug'
     """
     from ge.status import issues_with_status

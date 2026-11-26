@@ -7,7 +7,7 @@ or needs further investigation before work begins.
 import re
 from datetime import datetime, timezone
 
-from ge.status import status_name
+from ge.status import is_claimed, status_name
 from ge.github import (
     get_issue,
     get_pr,
@@ -23,7 +23,6 @@ from ge.github import (
 STALE_CLAIM_DAYS = 14
 """Days without activity after which an In progress / In review issue is flagged."""
 
-CLAIM_STATUSES = ("In progress", "In review")
 
 
 def _parse_iso(datestr):
@@ -110,8 +109,11 @@ def analyze_issue(repo, number, *, stale_claim_days=STALE_CLAIM_DAYS):
         )
 
     # Claimed but quiet? (In progress / In review is the live claim on an issue)
+    claimed = state == "open" and is_claimed(issue)
+    if claimed:
+        signals.append(f"Status is {status}: someone is working on this issue")
     if (
-        status in CLAIM_STATUSES
+        claimed
         and last_activity_days is not None
         and last_activity_days > stale_claim_days
     ):
@@ -119,7 +121,7 @@ def analyze_issue(repo, number, *, stale_claim_days=STALE_CLAIM_DAYS):
             f"Status is {status} but nothing happened for {last_activity_days} days "
             "— the claim may be stale"
         )
-    elif status:
+    elif status and not claimed:
         signals.append(f"Status: {status}")
 
     # Stale?
@@ -190,7 +192,7 @@ def analyze_issue(repo, number, *, stale_claim_days=STALE_CLAIM_DAYS):
     # Recommendation
     if state == "closed":
         recommendation = "likely_resolved"
-    elif merged_prs or found_status:
+    elif merged_prs or found_status or claimed:
         recommendation = "investigate"
     elif last_activity_days and last_activity_days > 365:
         recommendation = "investigate"

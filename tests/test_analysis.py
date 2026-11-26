@@ -183,6 +183,13 @@ class TestAnalyzeIssue:
         result = self._run(issue)
         assert any('claim may be stale' in s for s in result['signals'])
 
+    def test_claimed_issue_is_not_proceed(self):
+        issue = _make_issue(updated_days_ago=1)
+        issue['status'] = {'name': 'In review', 'category': 'started', 'id': 8}
+        result = self._run(issue)
+        assert result['recommendation'] == 'investigate'
+        assert any('someone is working on this issue' in s for s in result['signals'])
+
     def test_no_status_when_unavailable(self):
         result = self._run(_make_issue())
         assert result['status'] is None and result['state_reason'] is None
