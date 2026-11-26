@@ -80,6 +80,7 @@ back into the body — the body is the artifact, the thread is the history.
 - **`@mention` them in the body too** if they are not a frequent GitHub user. Assignment is
   quiet.
 - **Read the assignee back.** A successful API call is not proof the assignment took.
+- **Assigning also moves the issue's native status** from Backlog to Todo (where GitHub has issue statuses). That is right for a question put to someone; do not "fix" it.
 - **Say what it costs to guess wrong.** Not "we'd like to know" — "if we guess wrong here, the
   number we publish is measuring your software rather than your data."
 - **Offer a cheap answer.** "A rough answer is fine — *X is meaningless, the rest are real*

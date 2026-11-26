@@ -13,6 +13,7 @@
 - **`ge/context.py`** — Orchestrates everything into structured context documents (markdown + JSON)
 - **`ge/__init__.py`** — Public facade (`prepare()`, `resolve_target()`, etc.)
 - **`ge/__main__.py`** — CLI via argh. SSOT: `_cli_commands` list
+- **`ge/status.py`** — GitHub's native issue statuses (preview, 2026-11): `issue_status`, `set_issue_status` (REST `status` name; GraphQL `setIssueStatus` only for Duplicate), `issues_with_status` (search `status:"<name>"`), `planning_statuses`. Returns None where statuses are unavailable, so callers fall back on open/closed.
 - **`ge/memory.py`** — GitHub-backed durable memory: `RoadmapStore`, `DecisionLog`, `TriageBacklog` (Mapping/Iterable facades over `gh`); `github_memory()` factory; local `.ge/cache/` snapshot.
 - **`ge/run.py`** — Autonomous runner. `run_roadmap()` / `run_triage()` launch headless `claude -p` in a loop; permission mode (`auto` / `bypass`) is set here, not in any skill. So is each spawned session's scope (`SessionScope`: cwd (a warning when it is outside every package checkout), `--add-dir`s only for what the run edits, their `CLAUDE.md` files and any routing documents as first Reads, skills named in the prompt, `--model`/`--effort`); the run's result carries it (#9), but decision-log comments never do: they may land on a public repo, and the scope holds local paths.
 - **`ge/data/skills/`** — Claude Code skills (symlinked into `.claude/skills/`). Includes `ge-autonomous-execution`, `ge-roadmap-execution`, and `ge-cross-repo-triage` for unattended runs.

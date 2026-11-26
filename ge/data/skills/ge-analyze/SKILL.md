@@ -25,6 +25,8 @@ Returns a dict with:
 | Field | Type | Description |
 |-------|------|-------------|
 | `state` | str | `"open"` or `"closed"` |
+| `state_reason` | str or None | `completed`, `not_planned`, `duplicate`, `reopened` |
+| `status` | str or None | GitHub's native status (`Backlog`, `Todo`, `In progress`, `In review`, `Done`, `Not planned`, `Duplicate`); None where statuses are unavailable or unset |
 | `age_days` | int | Days since issue was created |
 | `last_activity_days` | int | Days since last comment or event |
 | `labels` | list[str] | Issue labels |
@@ -35,6 +37,8 @@ Returns a dict with:
 | `recommendation` | str | One of: `proceed`, `investigate`, `likely_resolved` |
 
 ### Interpreting issue recommendations
+
+A `status` of `In progress` or `In review` means the issue is claimed; the signal "the claim may be stale" means it has been quiet for more than `STALE_CLAIM_DAYS` (14) days.
 
 - **`proceed`** — Issue is open, active, and unresolved. Safe to work on.
 - **`investigate`** — Mixed signals. There may be related merged PRs, recent activity suggesting partial resolution, or the issue is very old. Ask the user before investing effort.

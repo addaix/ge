@@ -7,6 +7,7 @@ or needs further investigation before work begins.
 import re
 from datetime import datetime, timezone
 
+from ge.status import is_claimed, status_name
 from ge.github import (
     get_issue,
     get_pr,
@@ -17,6 +18,11 @@ from ge.github import (
     get_default_branch,
     get_file_at_ref,
 )
+
+
+STALE_CLAIM_DAYS = 14
+"""Days without activity after which an In progress / In review issue is flagged."""
+
 
 
 def _parse_iso(datestr):
@@ -55,11 +61,13 @@ def _extract_file_refs(markdown):
     return list(paths)
 
 
-def analyze_issue(repo, number):
+def analyze_issue(repo, number, *, stale_claim_days=STALE_CLAIM_DAYS):
     """Analyze an issue for staleness and current relevance.
 
     Returns a dict with:
       - state: open/closed
+      - state_reason: completed / not_planned / duplicate / reopened, or None
+      - status: GitHub's native status (Backlog, Todo, In progress, ...), or None
       - age_days: days since creation
       - last_activity_days: days since last comment/event
       - labels: list of label names
@@ -80,6 +88,8 @@ def analyze_issue(repo, number):
 
     # Basic state
     state = issue.get("state", "unknown")
+    state_reason = issue.get("state_reason")
+    status = status_name(issue)
     age_days = _days_ago(issue.get("created_at"))
     labels = [l["name"] for l in issue.get("labels", [])]
 
@@ -97,6 +107,22 @@ def analyze_issue(repo, number):
         signals.append(
             f"Issue is CLOSED (closed {_days_ago(issue.get('closed_at', '')) or '?'} days ago)"
         )
+
+    # Claimed but quiet? (In progress / In review is the live claim on an issue)
+    claimed = state == "open" and is_claimed(issue)
+    if claimed:
+        signals.append(f"Status is {status}: someone is working on this issue")
+    if (
+        claimed
+        and last_activity_days is not None
+        and last_activity_days > stale_claim_days
+    ):
+        signals.append(
+            f"Status is {status} but nothing happened for {last_activity_days} days "
+            "— the claim may be stale"
+        )
+    elif status and not claimed:
+        signals.append(f"Status: {status}")
 
     # Stale?
     if last_activity_days and last_activity_days > 180:
@@ -166,7 +192,7 @@ def analyze_issue(repo, number):
     # Recommendation
     if state == "closed":
         recommendation = "likely_resolved"
-    elif merged_prs or found_status:
+    elif merged_prs or found_status or claimed:
         recommendation = "investigate"
     elif last_activity_days and last_activity_days > 365:
         recommendation = "investigate"
@@ -175,6 +201,8 @@ def analyze_issue(repo, number):
 
     return {
         "state": state,
+        "state_reason": state_reason,
+        "status": status,
         "age_days": age_days,
         "last_activity_days": last_activity_days,
         "labels": labels,

@@ -177,6 +177,9 @@ ge video-frames <video>            Extract frames (scene detection by default)
 ge describe-images <img>...        Describe images via Claude API (vision)
 ge copy-images <img>...            Create montage + copy to clipboard (macOS)
 ge resolve <target>                Resolve a URL, folder, or number to structured target
+ge status <repo> <N>               An issue's native status (Backlog, Todo, In progress, ...)
+ge set-status <repo> <N> <status>  Set it; GitHub closes/reopens to match (e.g. in-progress, done)
+ge in-status <status> --owner <o>  Issues in one status across an owner (or --repo)
 ge file-batch <records.json> <repo>  File related issues: dependency order, {#KEY} refs, blocked_by edges (resumable)
 ge install-skills                  Register skills with Claude Code (~/.claude/skills/)
 ge uninstall-skills                Remove ge skill symlinks
@@ -252,6 +255,7 @@ ge/
 ├── memory.py        # GitHub-backed memory: RoadmapStore, DecisionLog, TriageBacklog
 ├── run.py           # Autonomous runner: launches `claude` in a loop
 ├── batch.py         # File a batch of related issues with dependency edges
+├── status.py        # GitHub's native issue statuses: read, set, search
 └── data/skills/     # Claude Code skills (symlinked by install-skills)
     ├── ge/                     # Full workflow skill
     ├── ge-analyze/             # Triage/staleness skill

@@ -69,7 +69,8 @@ irreversible, or every safe path leads to the same dead end. In that case:
 1. Log a final decision summarising the blocker and the smallest piece of
    human input that would unblock you.
 2. Leave the in-flight task in `doing` state on the roadmap (do not flip
-   it back to `todo` — that hides progress).
+   it back to `todo` — that hides progress). An issue you set to
+   `In progress` stays there too; the decision log says why it is quiet.
 3. Exit cleanly.
 
 A killed session that hits the permission-denial cap is **not** "stuck" —

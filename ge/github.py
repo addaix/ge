@@ -5,6 +5,8 @@ related commits, and referenced code -- all through the gh CLI so that
 private repo access is handled by the user's existing gh auth.
 """
 
+import re
+
 from ge.util import gh_api, parse_repo_spec
 
 
@@ -124,6 +126,18 @@ def get_pr_files(repo, number):
 # ---------------------------------------------------------------------------
 
 
+def mentions_issue(text, number):
+    """Whether *text* references issue *number* as ``#number`` (GitHub search
+    ignores the ``#``, so a search for it also matches the bare number).
+
+    >>> mentions_issue('Fixes #12.', 12), mentions_issue('see #123', 12), mentions_issue('v12', 12)
+    (True, False, False)
+    >>> mentions_issue('closes owner/repo#12', 12)
+    True
+    """
+    return re.search(rf"#{int(number)}(?!\d)", text or "") is not None
+
+
 def find_related_prs(repo, issue_number):
     """Find PRs that reference or close this issue.
 
@@ -167,7 +181,8 @@ def find_related_prs(repo, issue_number):
             },
         )
         for item in results.get("items", []):
-            if item["number"] not in seen:
+            text = f"{item.get('title') or ''}\n{item.get('body') or ''}"
+            if item["number"] not in seen and mentions_issue(text, issue_number):
                 seen.add(item["number"])
                 related.append(
                     {
@@ -205,6 +220,7 @@ def find_related_commits(repo, issue_number, *, limit=20):
                 "url": item["html_url"],
             }
             for item in results.get("items", [])
+            if mentions_issue(item["commit"]["message"], issue_number)
         ]
     except Exception:
         return []

@@ -119,6 +119,8 @@ The context includes an analysis with a `recommendation` field:
 
 **IMPORTANT:** If recommendation is NOT `proceed`, explain what you found and ask the user before doing work.
 
+**The issue's native status** (`status` in the analysis: Backlog, Todo, In progress, In review, Done, Not planned, Duplicate, or None where GitHub has not enabled statuses) is the live claim. `In progress` or `In review` means someone (often another agent session) is already on it: say so and ask before starting. A "claim may be stale" signal means it has been quiet for weeks; ask before taking it over.
+
 ### Step 4: Handle media / images
 
 The context document includes downloaded images and — when `anthropic` is installed and `ANTHROPIC_API_KEY` is set — **AI-generated image descriptions** under the "Image Descriptions (AI-generated)" section.
@@ -167,7 +169,7 @@ Then read the relevant sections of those files.
 
 ### Step 6: Work on the issue
 
-Now you have full context. Create a branch, make changes, and submit a PR. Reference the issue number in your commits.
+Now you have full context. **Claim the issue first:** `ge set-status owner/repo 42 in-progress` (not on a closed issue: setting a status reopens it; if ge reports that statuses are unavailable in that repo, carry on without). Then create a branch, make changes, and submit a PR with `Closes #42`: GitHub moves the issue to In review when the PR is linked and to Done when it merges. If you stop without a PR, put it back: `ge set-status owner/repo 42 todo`. The rules (what each status means here, and what stays a label) are in the `github-memory` skill.
 
 ## Quick analysis shortcut
 
@@ -194,6 +196,9 @@ For more details on interpreting analysis results, see the `ge-analyze` skill.
 | `ge.prepare_discussion(repo, number)` | Prepare discussion context |
 | `ge.analyze_issue(repo, number)` | Staleness analysis (JSON, no media) |
 | `ge.analyze_pr(repo, number)` | PR review analysis (JSON, no media) |
+| `ge.issue_status(repo, number)` / `ge status` | The issue's native status name, or None |
+| `ge.set_issue_status(repo, number, status)` / `ge set-status` | Set it (GitHub closes/reopens to match) |
+| `ge.issues_with_status(status, repo=... or owner=...)` / `ge in-status` | Issues in one status, across a repo or an owner |
 | `ge.describe_images(*paths)` | Describe images via Claude API (vision) |
 | `ge.copy_images_to_clipboard(*paths)` | Create montage + copy to clipboard |
 | `ge.process_all_media(markdown, output_dir)` | Download images + extract video frames |
