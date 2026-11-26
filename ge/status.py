@@ -298,7 +298,12 @@ def issues_with_status(
     scope = f"repo:{'/'.join(parse_repo_spec(repo))}" if repo else f"user:{owner}"
     q = " ".join(
         x
-        for x in (scope, "is:issue", status_query(status, statuses=statuses), extra_query)
+        for x in (
+            scope,
+            "is:issue",
+            status_query(status, statuses=statuses),
+            extra_query,
+        )
         if x
     )
     limit = min(limit, SEARCH_RESULT_CAP)

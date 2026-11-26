@@ -24,7 +24,6 @@ STALE_CLAIM_DAYS = 14
 """Days without activity after which an In progress / In review issue is flagged."""
 
 
-
 def _parse_iso(datestr):
     """Parse ISO 8601 date string to datetime."""
     if not datestr:

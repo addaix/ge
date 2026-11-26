@@ -291,6 +291,7 @@ def set_status(repo: str, number: int, status: str, *, duplicate_of: int = None)
 
     print(json.dumps(set_issue_status(repo, number, status, duplicate_of=duplicate_of)))
 
+
 def in_status(
     status: str,
     *,
